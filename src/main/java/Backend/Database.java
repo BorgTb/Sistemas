@@ -11,7 +11,7 @@ public class Database {
     private MongoClient mongoClient;
     private MongoDatabase database;
     
-    private static final String URI = "mongodb+srv://admin123:123admin123@data.lohu3.mongodb.net/?retryWrites=true&w=majority&appName=Data";
+    private static final String URI = "mongodb://admin123:123admin123@data-shard-00-00.lohu3.mongodb.net:27017,data-shard-00-01.lohu3.mongodb.net:27017,data-shard-00-02.lohu3.mongodb.net:27017/?ssl=true&replicaSet=atlas-2z76ir-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Data";
     private static final String DATABASE_NAME = "Data";
 
     // Constructor privado para evitar instanciación directa
