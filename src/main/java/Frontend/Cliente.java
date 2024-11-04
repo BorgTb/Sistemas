@@ -3,7 +3,6 @@ package Frontend;
 import java.net.Socket;
 
 import Frontend.Controladores.ControladorCliente;
-import Frontend.Vistas.VistaCliente;
 
 
 public class Cliente {

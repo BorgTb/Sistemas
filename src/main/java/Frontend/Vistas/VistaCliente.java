@@ -1,20 +1,17 @@
 package Frontend.Vistas;
 
-
-import Frontend.Controladores.ControladorCliente;
-import javax.swing.*;
-
-import Backend.Cliente;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
+import java.io.IOException; // Asegúrate de importar ActionListener
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-public class VistaCliente extends JFrame{
-    
+public class VistaCliente extends JFrame {
     private JTextArea areaTexto;
     private JTextField campoTexto;
     private JButton botonEnviar;
@@ -24,18 +21,15 @@ public class VistaCliente extends JFrame{
     private JButton botonGrupoEnviar;
     private JPanel panel;
 
-
-
-    public VistaCliente() throws IOException{
+    public VistaCliente() throws IOException {
         crearVentanaCliente();
-
     }
 
     private void crearVentanaCliente() {
         setTitle("Cliente");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
         panel = new JPanel();
         areaTexto = new JTextArea(20, 50);
         areaTexto.setEditable(false);
@@ -54,20 +48,24 @@ public class VistaCliente extends JFrame{
         panel.add(botonGrupo, BorderLayout.SOUTH);
         panel.add(botonGrupoUnirse, BorderLayout.SOUTH);
         panel.add(botonGrupoEnviar, BorderLayout.SOUTH);
-        
-
-
 
         add(panel);
         setVisible(true);
     }
 
-    public String getTextoIngresado(){
+    public void mostrarMensaje(String mensaje) {
+        areaTexto.append(mensaje + "\n");
+    }
+
+    public void limpiarCampo() {
+        campoTexto.setText("");
+    }
+
+    public String getTextoIngresado() {
         return campoTexto.getText();
     }
 
-
-    public void addActionListener(ActionListener listener){
+    public void addActionListener(ActionListener listener) {
         botonEnviar.addActionListener(listener);
         botonEnviarPrivado.addActionListener(listener);
         botonGrupo.addActionListener(listener);
@@ -82,5 +80,4 @@ public class VistaCliente extends JFrame{
             e.printStackTrace();
         }
     }
-
 }

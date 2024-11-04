@@ -2,54 +2,50 @@ package Backend;
 
 import org.bson.Document;
 
+import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
 public class Administrador {
-    Database data = Database.getInstance();
-    
+    private Database data = Database.getInstance();
+
     public Administrador() {
         System.out.println("Administrador creado");
     }
 
-
-    /*
-    FALTA VALIDAR:
-    - SI UN CLIENTE YA EXISTE, O SI SE INGRESA UN CLIENTE CON EL MISMO RUT, ETC..
-    - 
-    */
+    // Método para crear un cliente validando si el RUT ya existe
     @SuppressWarnings("unchecked")
-    public void crearCliente() {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document document = new Document("_id","1")
-        .append("nombre","Juan").
-        append("rut","211992204").
-        append("correo","elpepe@gmail.com").
-        append("clave", "1234");
-
-        collection.insertOne(document);
+    public void crearCliente(String nombre, String rut, String correo, String clave, String tipoUsuario) {
+    try {
+        MongoCollection<Document> collection = data.getColeccion("Clientes");
+        Document document = new Document("_id", rut) // Usando RUT como ID único
+                .append("nombre", nombre)
+                .append("correo", correo)
+                .append("clave", clave)
+                .append("tipo", tipoUsuario); // Almacenar el tipo de usuario
+        collection.insertOne(document); // Insertar en la colección
+        System.out.println("Cliente creado: " + nombre + " Tipo: " + tipoUsuario);
+    } catch (MongoException e) {
+        System.out.println("Error al insertar el cliente: " + e.getMessage());
     }
+}
+
 
     public void leerCliente() {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document document = (Document) collection.find().first();
-        System.out.println(document.toJson());
-    } 
+        MongoCollection<Document> collection = data.getColeccion("Clientes");
+        Document document = collection.find().first();
+        System.out.println(document != null ? document.toJson() : "No se encontró ningún cliente.");
+    }
 
     public void eliminarCliente(String rut) {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document query = new Document("rut", rut);
-        collection.deleteOne(query);
+        MongoCollection<Document> collection = data.getColeccion("Clientes");
+        collection.deleteOne(Filters.eq("rut", rut));
         System.out.println("Cliente con RUT " + rut + " eliminado.");
     }
 
     public Document retornarCliente(String rut) {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document query = new Document("rut", rut);
-        Document cliente = (Document) collection.find(query).first();
+        MongoCollection<Document> collection = data.getColeccion("Clientes");
+        Document cliente = collection.find(Filters.eq("rut", rut)).first();
         if (cliente != null) {
             return cliente;
         } else {
@@ -58,17 +54,8 @@ public class Administrador {
         }
     }
 
-
-
-    //opcional un metodo para actualizar al cliente
-
-
-
     public static void main(String[] args) {
         Administrador admin = new Administrador();
-        //admin.crearCliente();
-        //admin.leerCliente();
         admin.leerCliente();
     }
-
 }
