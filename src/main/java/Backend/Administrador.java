@@ -7,28 +7,37 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
 public class Administrador {
-    private Database data = Database.getInstance();
+    private Database data;
 
     public Administrador() {
-        System.out.println("Administrador creado");
+        data = Database.getInstance();
     }
 
-    // Método para crear un cliente validando si el RUT ya existe
-    @SuppressWarnings("unchecked")
     public void crearCliente(String nombre, String rut, String correo, String clave, String tipoUsuario) {
-    try {
-        MongoCollection<Document> collection = data.getColeccion("Clientes");
-        Document document = new Document("_id", rut) // Usando RUT como ID único
-                .append("nombre", nombre)
-                .append("correo", correo)
-                .append("clave", clave)
-                .append("tipo", tipoUsuario); // Almacenar el tipo de usuario
-        collection.insertOne(document); // Insertar en la colección
-        System.out.println("Cliente creado: " + nombre + " Tipo: " + tipoUsuario);
-    } catch (MongoException e) {
-        System.out.println("Error al insertar el cliente: " + e.getMessage());
+        MongoCollection<Document> coleccion;
+
+        if ("Médico".equalsIgnoreCase(tipoUsuario)) {
+            coleccion = data.getColeccion("Medicos");
+        } else if ("Administrativo".equalsIgnoreCase(tipoUsuario)) {
+            coleccion = data.getColeccion("Administrativos");
+        } else {
+            System.out.println("Tipo de usuario no válido.");
+            return;
+        }
+
+        Document cliente = new Document("nombre", nombre)
+                                .append("rut", rut)
+                                .append("correo", correo)
+                                .append("clave", clave)
+                                .append("tipoUsuario", tipoUsuario);
+
+        try {
+            coleccion.insertOne(cliente);
+            System.out.println("Cliente agregado exitosamente.");
+        } catch (MongoException e) {
+            System.out.println("Error al agregar cliente: " + e);
+        }
     }
-}
 
 
     public void leerCliente() {

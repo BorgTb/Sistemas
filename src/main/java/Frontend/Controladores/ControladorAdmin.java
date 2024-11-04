@@ -6,33 +6,51 @@ import java.awt.event.ActionListener; // Asumiendo que tienes un administrador p
 import Backend.Administrador;
 import Frontend.Vistas.VistaAdmin;
 
-public class ControladorAdmin implements ActionListener {
+// En ControladorAdmin.java
+public class ControladorAdmin {
     private VistaAdmin vista;
-    private Administrador administrador; // Clase que maneja la lógica de usuario
+    private Administrador administrador;
 
     public ControladorAdmin() {
         vista = new VistaAdmin();
         administrador = new Administrador();
-        vista.addActionListener(this);
+        vista.addAgregarUsuarioListener(new AgregarUsuarioListener());
+        vista.addEnviarUrgenteListener(new EnviarUrgenteListener());
+        vista.addVerEstadisticasListener(new VerEstadisticasListener());
     }
-    public void actionPerformed(ActionEvent e) {
-        // Recopila los datos de la vista
-        String nombre = vista.getNombre();
-        String rut = vista.getRut();
-        String correo = vista.getCorreo();
-        String clave = vista.getClave();
-        String tipoUsuario = vista.getTipoUsuario();
-    
-        // Validar campos
-        if (nombre.isEmpty() || rut.isEmpty() || correo.isEmpty() || clave.isEmpty() || tipoUsuario.isEmpty()) {
-            System.out.println("Todos los campos deben estar llenos.");
-            return;
-        }else{
-            System.out.println("hola");
+
+    private class AgregarUsuarioListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String nombre = vista.getNombre();
+            String rut = vista.getRut();
+            String correo = vista.getCorreo();
+            String clave = vista.getClave();
+            String tipoUsuario = vista.getTipoUsuario();
+
+            if (nombre.isEmpty() || rut.isEmpty() || correo.isEmpty() || clave.isEmpty() || tipoUsuario.isEmpty()) {
+                System.out.println("Todos los campos deben estar llenos.");
+                return;
+            }
+
+            administrador.crearCliente(nombre, rut, correo, clave, tipoUsuario);
+            vista.limpiarCampos();
         }
-    
-        // Intentar crear el cliente
-        administrador.crearCliente(nombre, rut, correo, clave, tipoUsuario);
     }
-    
+
+    private class EnviarUrgenteListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Lógica para el botón Enviar Urgente
+            System.out.println("Enviar Urgente presionado");
+        }
+    }
+
+    private class VerEstadisticasListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Lógica para el botón Ver Estadísticas
+            System.out.println("Ver Estadísticas presionado");
+        }
+    }
 }

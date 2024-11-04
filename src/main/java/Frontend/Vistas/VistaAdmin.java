@@ -1,7 +1,10 @@
 package Frontend.Vistas;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -13,56 +16,87 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Frontend.Controladores.ControladorAdmin;
+
 public class VistaAdmin extends JFrame {
     private JPanel panelPrincipal;
     private JTextField campoNombre, campoRut, campoCorreo, campoClave;
-    private JComboBox<String> comboTipoUsuario; // JComboBox para seleccionar el tipo de usuario
+    private JComboBox<String> comboTipoUsuario;
+    private JComboBox<String> area;
     private JTextArea areaTextoUsuarios, areaTextoEstadisticas;
     private JButton botonAgregarUsuario, botonEnviarUrgente, botonVerEstadisticas;
 
     public VistaAdmin() {
-        crearVentanaAdmin();
-    }
-
-    private void crearVentanaAdmin() {
         setTitle("Administrador de Chat");
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        panelPrincipal = new JPanel();
-        panelPrincipal.setLayout(new GridLayout(7, 2)); // Aumentamos a 7 filas
+        panelPrincipal = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Campos para agregar usuarios
-        panelPrincipal.add(new JLabel("Nombre:"));
-        campoNombre = new JTextField();
-        panelPrincipal.add(campoNombre);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelPrincipal.add(new JLabel("Nombre:"), gbc);
+        gbc.gridx = 1;
+        campoNombre = new JTextField(20);
+        panelPrincipal.add(campoNombre, gbc);
 
-        panelPrincipal.add(new JLabel("RUT:"));
-        campoRut = new JTextField();
-        panelPrincipal.add(campoRut);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelPrincipal.add(new JLabel("RUT:"), gbc);
+        gbc.gridx = 1;
+        campoRut = new JTextField(20);
+        panelPrincipal.add(campoRut, gbc);
 
-        panelPrincipal.add(new JLabel("Correo:"));
-        campoCorreo = new JTextField();
-        panelPrincipal.add(campoCorreo);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panelPrincipal.add(new JLabel("Correo:"), gbc);
+        gbc.gridx = 1;
+        campoCorreo = new JTextField(20);
+        panelPrincipal.add(campoCorreo, gbc);
 
-        panelPrincipal.add(new JLabel("Clave:"));
-        campoClave = new JTextField();
-        panelPrincipal.add(campoClave);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panelPrincipal.add(new JLabel("Clave:"), gbc);
+        gbc.gridx = 1;
+        campoClave = new JTextField(20);
+        panelPrincipal.add(campoClave, gbc);
 
         // Añadir JComboBox para seleccionar tipo de usuario
-        panelPrincipal.add(new JLabel("Tipo de Usuario:"));
-        String[] tipos = {"Admisión", "Pabellón", "Exámenes", "Auxiliar"};
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panelPrincipal.add(new JLabel("Tipo de Usuario:"), gbc);
+        gbc.gridx = 1;
+        String[] tipos = {"Médico", "Administrativo"};
         comboTipoUsuario = new JComboBox<>(tipos);
-        panelPrincipal.add(comboTipoUsuario);
+        panelPrincipal.add(comboTipoUsuario, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        panelPrincipal.add(new JLabel("Área específica:"), gbc);
+        gbc.gridx = 1;
+        String[] areaEspecifica = {"Admisión", "Pabellón", "Exámenes", "Auxiliar"};
+        area = new JComboBox<>(areaEspecifica);
+        area.setEnabled(false); // Inicialmente deshabilitado
+        panelPrincipal.add(area, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
         botonAgregarUsuario = new JButton("Agregar Usuario");
-        botonEnviarUrgente = new JButton("Enviar Mensaje Urgente");
-        botonVerEstadisticas = new JButton("Ver Estadísticas");
+        panelPrincipal.add(botonAgregarUsuario, gbc);
 
-        panelPrincipal.add(botonAgregarUsuario);
-        panelPrincipal.add(botonEnviarUrgente);
-        panelPrincipal.add(botonVerEstadisticas);
+        gbc.gridy = 7;
+        botonEnviarUrgente = new JButton("Enviar Mensaje Urgente");
+        panelPrincipal.add(botonEnviarUrgente, gbc);
+
+        gbc.gridy = 8;
+        botonVerEstadisticas = new JButton("Ver Estadísticas");
+        panelPrincipal.add(botonVerEstadisticas, gbc);
 
         // Text areas for monitoring users and statistics
         areaTextoUsuarios = new JTextArea(10, 40);
@@ -78,23 +112,31 @@ public class VistaAdmin extends JFrame {
         add(scrollUsuarios, BorderLayout.CENTER);
         add(scrollEstadisticas, BorderLayout.SOUTH);
 
+        // Add ActionListener to comboTipoUsuario
+        comboTipoUsuario.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ("Administrativo".equals(comboTipoUsuario.getSelectedItem())) {
+                    area.setEnabled(true);
+                } else {
+                    area.setEnabled(false);
+                }
+            }
+        });
+
         setVisible(true);
     }
 
-    // Methods to add ActionListeners
-    public void addActionListener(ActionListener listener) {
+    public void addAgregarUsuarioListener(ActionListener listener) {
         botonAgregarUsuario.addActionListener(listener);
+    }
+
+    public void addEnviarUrgenteListener(ActionListener listener) {
         botonEnviarUrgente.addActionListener(listener);
+    }
+
+    public void addVerEstadisticasListener(ActionListener listener) {
         botonVerEstadisticas.addActionListener(listener);
-    }
-
-    // Methods to display user list and statistics
-    public void mostrarUsuarios(String usuarios) {
-        areaTextoUsuarios.setText(usuarios);
-    }
-
-    public void mostrarEstadisticas(String estadisticas) {
-        areaTextoEstadisticas.setText(estadisticas);
     }
 
     public String getNombre() {
@@ -114,10 +156,24 @@ public class VistaAdmin extends JFrame {
     }
 
     public String getTipoUsuario() {
-        return (String) comboTipoUsuario.getSelectedItem(); // Obtener el tipo de usuario seleccionado
+        return (String) comboTipoUsuario.getSelectedItem();
+    }
+
+    public void limpiarCampos() {
+        campoNombre.setText("");
+        campoRut.setText("");
+        campoCorreo.setText("");
+        campoClave.setText("");
+        comboTipoUsuario.setSelectedIndex(0);
+        area.setSelectedIndex(0);
+        area.setEnabled(false);
+    }
+
+    public JButton getBotonAgregarUsuario() {
+        return botonAgregarUsuario;
     }
 
     public static void main(String[] args) {
-        new VistaAdmin();
+        new ControladorAdmin();
     }
 }
