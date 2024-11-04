@@ -1,15 +1,14 @@
 package Frontend.Vistas;
 
-import javax.swing.*;
-
-public class Vistadministrativo extends VentanaBase {
-    private JButton botonAgregarUsuario;
-
+public class Vistadministrativo extends VistaCliente {
     public Vistadministrativo() {
         super();
-        botonAgregarUsuario = new JButton("Agregar Usuario");
-        panelPrincipal.add(botonAgregarUsuario);
-
-        // Agregar funcionalidades específicas para administrativos
+        // Aquí puedes agregar lógica específica para Vistadministrativo
     }
+
+    private void enviarMensajeMedico() {
+
+    }
+
+    // Métodos adicionales para enviar mensajes a otros roles
 }

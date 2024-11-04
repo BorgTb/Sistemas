@@ -1,15 +1,12 @@
 package Frontend.Vistas;
 
-import javax.swing.JButton;
-
-public class VistaMedico extends VentanaBase {
-    private JButton botonEnviarUrgente;
-
+public class VistaMedico extends VistaCliente {
     public VistaMedico() {
         super();
-        botonEnviarUrgente = new JButton("Enviar Mensaje Urgente");
-        panelPrincipal.add(botonEnviarUrgente);
+        // Aquí puedes agregar lógica específica para VistaMedico
+    }
 
-        // Agregar funcionalidades específicas para médicos
+    public static void main(String[] args) {
+        new VistaMedico().setVisible(true);
     }
 }

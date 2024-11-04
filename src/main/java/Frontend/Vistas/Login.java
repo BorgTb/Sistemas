@@ -1,6 +1,7 @@
 package Frontend.Vistas;
 
 import Backend.Administrador;
+import Frontend.Vistas.VistaCliente;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ public class Login extends JFrame {
     private JPasswordField campoClave;
     private JButton botonLogin;
     private JComboBox<String> comboTipoUsuario;
+    private VistaCliente vistaCliente;
 
     public Login() {
         setTitle("Login");
@@ -42,26 +44,28 @@ public class Login extends JFrame {
                 String rut = campoRut.getText();
                 String clave = new String(campoClave.getPassword());
                 String tipoUsuario = (String) comboTipoUsuario.getSelectedItem();
-
                 Administrador admin = new Administrador();
                 boolean autenticado = false;
-
                 if ("Médico".equals(tipoUsuario)) {
                     autenticado = admin.autenticarMedico(rut, clave);
                     if (autenticado) {
-                        new VistaMedico().setVisible(true);
+                        vistaCliente = new VistaCliente();
+                        vistaCliente.setTitle("Vista Médico");
+                        vistaCliente.setVisible(true);
+                        dispose(); // Cierra la ventana de login
+                    } else {
+                        JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                     }
                 } else if ("Administrativo".equals(tipoUsuario)) {
                     autenticado = admin.autenticarAdministrativo(rut, clave);
                     if (autenticado) {
-                        new Vistadministrativo().setVisible(true);
+                        vistaCliente = new VistaCliente();
+                        vistaCliente.setTitle("Vista Administrativo");
+                        vistaCliente.setVisible(true);
+                        dispose(); // Cierra la ventana de login
+                    } else {
+                        JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                     }
-                }
-
-                if (autenticado) {
-                    dispose(); // Cierra la ventana de login
-                } else {
-                    JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
