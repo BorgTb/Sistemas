@@ -38,7 +38,17 @@ public class Administrador {
             System.out.println("Error al agregar cliente: " + e);
         }
     }
+    public boolean autenticarMedico(String rut, String clave) {
+        MongoCollection<Document> coleccion = data.getColeccion("Medicos");
+        Document medico = coleccion.find(Filters.and(Filters.eq("rut", rut), Filters.eq("clave", clave))).first();
+        return medico != null;
+    }
 
+    public boolean autenticarAdministrativo(String rut, String clave) {
+        MongoCollection<Document> coleccion = data.getColeccion("Administrativos");
+        Document administrativo = coleccion.find(Filters.and(Filters.eq("rut", rut), Filters.eq("clave", clave))).first();
+        return administrativo != null;
+    }
 
     public void leerCliente() {
         MongoCollection<Document> collection = data.getColeccion("Clientes");

@@ -2,7 +2,6 @@ package Frontend.Vistas;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.io.IOException; // Asegúrate de importar ActionListener
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,69 +14,39 @@ public class VistaCliente extends JFrame {
     private JTextArea areaTexto;
     private JTextField campoTexto;
     private JButton botonEnviar;
-    private JButton botonEnviarPrivado;
-    private JButton botonGrupo;
-    private JButton botonGrupoUnirse;
-    private JButton botonGrupoEnviar;
-    private JPanel panel;
 
-    public VistaCliente() throws IOException {
-        crearVentanaCliente();
-    }
-
-    private void crearVentanaCliente() {
-        setTitle("Cliente");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        panel = new JPanel();
-        areaTexto = new JTextArea(20, 50);
-        areaTexto.setEditable(false);
-        JScrollPane scroll = new JScrollPane(areaTexto);
-        campoTexto = new JTextField(40);
+    public VistaCliente() {
+        // Inicializar componentes y configurar la interfaz gráfica
+        areaTexto = new JTextArea();
+        campoTexto = new JTextField();
         botonEnviar = new JButton("Enviar a Todos");
-        botonEnviarPrivado = new JButton("Enviar Privado");
-        botonGrupo = new JButton("Crear Grupo");
-        botonGrupoUnirse = new JButton("Unirse a Grupo");
-        botonGrupoEnviar = new JButton("Enviar a Grupo");
 
-        panel.add(scroll, BorderLayout.CENTER);
-        panel.add(campoTexto, BorderLayout.SOUTH);
-        panel.add(botonEnviar, BorderLayout.SOUTH);
-        panel.add(botonEnviarPrivado, BorderLayout.SOUTH);
-        panel.add(botonGrupo, BorderLayout.SOUTH);
-        panel.add(botonGrupoUnirse, BorderLayout.SOUTH);
-        panel.add(botonGrupoEnviar, BorderLayout.SOUTH);
+        // Configurar el layout y agregar componentes
+        setLayout(new BorderLayout());
+        add(new JScrollPane(areaTexto), BorderLayout.CENTER);
+        JPanel panelInferior = new JPanel(new BorderLayout());
+        panelInferior.add(campoTexto, BorderLayout.CENTER);
+        panelInferior.add(botonEnviar, BorderLayout.EAST);
+        add(panelInferior, BorderLayout.SOUTH);
 
-        add(panel);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
         setVisible(true);
     }
 
-    public void mostrarMensaje(String mensaje) {
-        areaTexto.append(mensaje + "\n");
-    }
-
-    public void limpiarCampo() {
-        campoTexto.setText("");
+    public void addActionListener(ActionListener listener) {
+        botonEnviar.addActionListener(listener);
     }
 
     public String getTextoIngresado() {
         return campoTexto.getText();
     }
 
-    public void addActionListener(ActionListener listener) {
-        botonEnviar.addActionListener(listener);
-        botonEnviarPrivado.addActionListener(listener);
-        botonGrupo.addActionListener(listener);
-        botonGrupoUnirse.addActionListener(listener);
-        botonGrupoEnviar.addActionListener(listener);
+    public void limpiarCampo() {
+        campoTexto.setText("");
     }
 
-    public static void main(String[] args) {
-        try {
-            VistaCliente vista = new VistaCliente();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void mostrarMensaje(String mensaje) {
+        areaTexto.append(mensaje + "\n");
     }
 }
