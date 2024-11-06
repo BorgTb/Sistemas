@@ -1,9 +1,22 @@
 package Frontend.Vistas;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class VistaAdministrativo extends JFrame {
     private JTextArea areaChatAuxiliar;
@@ -20,6 +33,9 @@ public class VistaAdministrativo extends JFrame {
     private JButton botonEnviarMensajeExamenes;
     private String nombreUsuario;
     private String rolUsuario;
+    private Socket socket;
+    private DataOutputStream salida;
+    private DataInputStream entrada;
 
     public VistaAdministrativo(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
@@ -84,28 +100,26 @@ public class VistaAdministrativo extends JFrame {
         tabbedPane.addTab("Chat Exámenes", panelExamenes);
 
         add(tabbedPane);
-
+        conectarAlServidor();
+        escucharMensajes();
         botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensajeAuxiliar();
             }
         });
-
         botonEnviarMensajeAdmision.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensajeAdmision();
             }
         });
-
         botonEnviarMensajePabellon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensajePabellon();
             }
         });
-
         botonEnviarMensajeExamenes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -113,13 +127,79 @@ public class VistaAdministrativo extends JFrame {
             }
         });
     }
+    private void conectarAlServidor() {
+        try {
+            socket = new Socket("localhost", 12345);
+            salida = new DataOutputStream(socket.getOutputStream());
+            entrada = new DataInputStream(socket.getInputStream());
+            System.out.println("Conectado al servidor");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+
+    private void escucharMensajes() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String mensaje;
+                    while ((mensaje = entrada.readUTF()) != null) {
+                        System.out.println("Mensaje recibido: " + mensaje);
+                        String[] partes = mensaje.split(":", 2);
+                        if (partes.length == 2) {
+                            String pestaña = partes[0];
+                            String contenidoMensaje = partes[1];
+                            switch (pestaña) {
+                                case "Auxiliar":
+                                    mostrarMensajeAuxiliar(contenidoMensaje);
+                                    break;
+                                case "Admision":
+                                    mostrarMensajeAdmision(contenidoMensaje);
+                                    break;
+                                case "Pabellon":
+                                    mostrarMensajePabellon(contenidoMensaje);
+                                    break;
+                                case "Examenes":
+                                    mostrarMensajeExamenes(contenidoMensaje);
+                                    break;
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
     private void enviarMensajeAuxiliar() {
-        String mensaje = campoMensajeAuxiliar.getText();
+        enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
+    }
+
+    private void enviarMensajeAdmision() {
+        enviarMensaje("Admision", campoMensajeAdmision, areaChatAdmision);
+    }
+
+    private void enviarMensajePabellon() {
+        enviarMensaje("Pabellon", campoMensajePabellon, areaChatPabellon);
+    }
+
+    private void enviarMensajeExamenes() {
+        enviarMensaje("Examenes", campoMensajeExamenes, areaChatExamenes);
+    }
+
+    private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
+        String mensaje = campoMensaje.getText();
         if (!mensaje.isEmpty()) {
-            mostrarMensajeAuxiliar(nombreUsuario + " (" + rolUsuario + "): " + mensaje);
-            campoMensajeAuxiliar.setText("");
-            // Aquí puedes agregar la lógica para enviar el mensaje a otros auxiliares
+            String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
+            String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
+            try {
+                salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                campoMensaje.setText("");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -127,39 +207,12 @@ public class VistaAdministrativo extends JFrame {
         areaChatAuxiliar.append(mensaje + "\n");
     }
 
-    private void enviarMensajeAdmision() {
-        String mensaje = campoMensajeAdmision.getText();
-        if (!mensaje.isEmpty()) {
-            mostrarMensajeAdmision(nombreUsuario + " (" + rolUsuario + "): " + mensaje);
-            campoMensajeAdmision.setText("");
-            // Aquí puedes agregar la lógica para enviar el mensaje a otros de admisión
-        }
-    }
-
     private void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
     }
 
-    private void enviarMensajePabellon() {
-        String mensaje = campoMensajePabellon.getText();
-        if (!mensaje.isEmpty()) {
-            mostrarMensajePabellon(nombreUsuario + " (" + rolUsuario + "): " + mensaje);
-            campoMensajePabellon.setText("");
-            // Aquí puedes agregar la lógica para enviar el mensaje a otros de pabellón
-        }
-    }
-
     private void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
-    }
-
-    private void enviarMensajeExamenes() {
-        String mensaje = campoMensajeExamenes.getText();
-        if (!mensaje.isEmpty()) {
-            mostrarMensajeExamenes(nombreUsuario + " (" + rolUsuario + "): " + mensaje);
-            campoMensajeExamenes.setText("");
-            // Aquí puedes agregar la lógica para enviar el mensaje a otros de exámenes
-        }
     }
 
     private void mostrarMensajeExamenes(String mensaje) {

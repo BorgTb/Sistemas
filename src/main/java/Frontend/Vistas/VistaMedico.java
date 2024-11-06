@@ -47,7 +47,6 @@ public class VistaMedico extends JFrame {
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle("Chat Médicos");
         JTabbedPane tabbedPane = new JTabbedPane();
 
         JPanel panelMedico = new JPanel(new BorderLayout());
@@ -118,19 +117,44 @@ public class VistaMedico extends JFrame {
          conectarAlServidor();
          escucharMensajes();
 
-        botonEnviarMensajeMedico.addActionListener(new ActionListener() {
+         botonEnviarMensajeMedico.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensajeMedico();
             }
         });
+        botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensajeAuxiliar();
+            }
+        });
+        botonEnviarMensajeAdmision.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensajeAdmision();
+            }
+        });
+        botonEnviarMensajePabellon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensajePabellon();
+            }
+        });
+        botonEnviarMensajeExamenes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensajeExamenes();
+            }
+        });
     }
 
-        private void conectarAlServidor() {
+    private void conectarAlServidor() {
         try {
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,7 +167,29 @@ public class VistaMedico extends JFrame {
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        mostrarMensajeMedico(mensaje);
+                        System.out.println("Mensaje recibido: " + mensaje);
+                        String[] partes = mensaje.split(":", 2);
+                        if (partes.length == 2) {
+                            String pestaña = partes[0];
+                            String contenidoMensaje = partes[1];
+                            switch (pestaña) {
+                                case "Medico":
+                                    mostrarMensajeMedico(contenidoMensaje);
+                                    break;
+                                case "Auxiliar":
+                                    mostrarMensajeAuxiliar(contenidoMensaje);
+                                    break;
+                                case "Admision":
+                                    mostrarMensajeAdmision(contenidoMensaje);
+                                    break;
+                                case "Pabellon":
+                                    mostrarMensajePabellon(contenidoMensaje);
+                                    break;
+                                case "Examenes":
+                                    mostrarMensajeExamenes(contenidoMensaje);
+                                    break;
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -151,21 +197,53 @@ public class VistaMedico extends JFrame {
             }
         }).start();
     }
+    
     private void enviarMensajeMedico() {
-        String mensaje = campoMensajeMedico.getText();
+        enviarMensaje("Medico", campoMensajeMedico, areaChatMedico);
+    }
+    
+    private void enviarMensajeAuxiliar() {
+        enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
+    }
+    
+    private void enviarMensajeAdmision() {
+        enviarMensaje("Admision", campoMensajeAdmision, areaChatAdmision);
+    }
+    
+    private void enviarMensajePabellon() {
+        enviarMensaje("Pabellon", campoMensajePabellon, areaChatPabellon);
+    }
+    
+    private void enviarMensajeExamenes() {
+        enviarMensaje("Examenes", campoMensajeExamenes, areaChatExamenes);
+    }
+    
+    private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
+        String mensaje = campoMensaje.getText();
         if (!mensaje.isEmpty()) {
             String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
-                salida.writeUTF(mensajeFormateado);
-                campoMensajeMedico.setText("");
+                salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                campoMensaje.setText("");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
     private void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
+    }
+    private void mostrarMensajeAdmision(String mensaje) {
+        areaChatAdmision.append(mensaje + "\n");
+    }
+    private void mostrarMensajePabellon(String mensaje) {
+        areaChatPabellon.append(mensaje + "\n");
+    }
+    private void mostrarMensajeExamenes(String mensaje) {
+        areaChatExamenes.append(mensaje + "\n");
+    }
+    private void mostrarMensajeAuxiliar(String mensaje) {
+        areaChatAuxiliar.append(mensaje + "\n");
     }
 }

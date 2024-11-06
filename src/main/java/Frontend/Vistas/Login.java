@@ -64,10 +64,12 @@ public class Login extends JFrame {
                 } else if ("Administrativo".equals(tipoUsuario)) {
                     autenticado = admin.autenticarAdministrativo(administrativo.getString("nombre"), clave);
                     if (autenticado) {
-                        VistaAdministrativo vistaAdministrativo = new VistaAdministrativo(rut, administrativo.getString("area"));
-                        vistaAdministrativo.setTitle("Vista Administrativo");
-                        vistaAdministrativo.setVisible(true);
-                        dispose(); // Cierra la ventana de login
+                        if(administrativo.getString("area").equals("Auxiliar")){
+                            VistaAuxiliar vistaAuxiliar = new VistaAuxiliar(rut, administrativo.getString("area"));
+                            vistaAuxiliar.setTitle("Vista Auxiliar: "+ administrativo.getString("nombre"));
+                            vistaAuxiliar.setVisible(true);
+                            dispose(); // Cierra la ventana de login
+                        }
                     } else {
                         JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                     }
