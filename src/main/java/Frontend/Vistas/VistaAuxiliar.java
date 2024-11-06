@@ -80,10 +80,13 @@ public class VistaAuxiliar extends JFrame {
                         System.out.println("Mensaje recibido: " + mensaje);
                         String[] partes = mensaje.split(":", 2);
                         if (partes.length == 2) {
+                            String pestaña = partes[0];
                             String contenidoMensaje = partes[1];
-                            mostrarMensajeAuxiliar(contenidoMensaje);
-                        }
+                            if (pestaña.equals("Auxiliar")) {
+                                mostrarMensajeAuxiliar(contenidoMensaje);
+                            }
                     }
+                }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
