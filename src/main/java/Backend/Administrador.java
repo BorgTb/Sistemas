@@ -74,6 +74,7 @@ public class Administrador {
             return null;
         }
     }
+    
     public Document retornarAdministrativo(String rut) {
         MongoCollection<Document> collection = data.getColeccion("Administrativos");
         Document cliente = collection.find(Filters.eq("rut", rut)).first();

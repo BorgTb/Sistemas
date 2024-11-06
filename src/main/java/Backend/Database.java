@@ -1,5 +1,10 @@
 package Backend;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -34,10 +39,18 @@ public class Database {
 
     // Método para obtener una colección de la base de datos
     @SuppressWarnings("rawtypes")
-    public MongoCollection getColeccion(String nombreColeccion) {
+    public MongoCollection<Document> getColeccion(String nombreColeccion) {
         return database.getCollection(nombreColeccion);
     }
 
+    public List<Document> getMedicos() {
+        MongoCollection<Document> collection = getColeccion("Medicos");
+        List<Document> medicos = collection.find().into(new ArrayList<>());
+        if (medicos.isEmpty()) {
+            System.out.println("No se encontraron médicos.");
+        }
+        return medicos;
+    }
 
    
 }
