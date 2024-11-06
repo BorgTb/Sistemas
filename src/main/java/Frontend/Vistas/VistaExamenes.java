@@ -225,6 +225,7 @@ public class VistaExamenes extends JFrame {
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                System.out.println(entrada.readUTF());
                 campoMensaje.setText("");
             } catch (IOException e) {
                 e.printStackTrace();
