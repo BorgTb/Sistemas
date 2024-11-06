@@ -182,7 +182,7 @@ public class VistaAdmision extends JFrame {
                                 case "Admision-Admision":
                                     mostrarMensajeAdmision(contenidoMensaje);
                                     break;
-                                case "Pabellon-Admision":
+                                case "Admision-Pabellon":
                                     mostrarMensajePabellon(contenidoMensaje);
                                     break;
                                 case "Examenes-Admision":
@@ -211,7 +211,7 @@ public class VistaAdmision extends JFrame {
     }
     
     private void enviarMensajePabellon() {
-        enviarMensaje("Pabellon-Admision", campoMensajePabellon, areaChatPabellon);
+        enviarMensaje("Admision-Pabellon", campoMensajePabellon, areaChatPabellon);
     }
     
     private void enviarMensajeExamenes() {

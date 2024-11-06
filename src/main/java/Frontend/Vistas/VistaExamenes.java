@@ -179,10 +179,10 @@ public class VistaExamenes extends JFrame {
                                 case "Auxiliar":
                                     mostrarMensajeAuxiliar(contenidoMensaje);
                                     break;
-                                case "Admision-Examenes":
+                                case "Examenes-Admision":
                                     mostrarMensajeAdmision(contenidoMensaje);
                                     break;
-                                case "Pabellon-Examenes":
+                                case "Examenes-Pabellon":
                                     mostrarMensajePabellon(contenidoMensaje);
                                     break;
                                 case "Examenes-Examenes":
@@ -207,11 +207,11 @@ public class VistaExamenes extends JFrame {
     }
     
     private void enviarMensajeAdmision() {
-        enviarMensaje("Admision-Examenes", campoMensajeAdmision, areaChatAdmision);
+        enviarMensaje("Examenes-Admision", campoMensajeAdmision, areaChatAdmision);
     }
     
     private void enviarMensajePabellon() {
-        enviarMensaje("Pabellon-Examenes", campoMensajePabellon, areaChatPabellon);
+        enviarMensaje("Examenes-Pabellon", campoMensajePabellon, areaChatPabellon);
     }
     
     private void enviarMensajeExamenes() {
