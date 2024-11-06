@@ -226,6 +226,7 @@ public class VistaExamenes extends JFrame {
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                System.out.println(entrada.readUTF());
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());

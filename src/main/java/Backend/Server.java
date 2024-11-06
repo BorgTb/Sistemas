@@ -29,6 +29,9 @@ public class Server {
     public static void enviarMensajeATodos(String mensaje) {
             for (ClienteHandler cliente : clientes) {
                 try {
+                    if (mensaje.contains("Medico")){
+                        System.out.println("Mensaje recibido de un medico y debe enviarse solo a los medios: " + mensaje);
+                    }
                     cliente.salida.writeUTF(mensaje);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -48,7 +51,6 @@ public class Server {
             public void run() {
                 try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
                     salida = new DataOutputStream(socket.getOutputStream());
-    
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
                         enviarMensajeATodos(mensaje);
