@@ -29,38 +29,80 @@ public class Server {
     public static void enviarMensajeATodos(String mensaje) {
             for (ClienteHandler cliente : clientes) {
                 try {
-                    if (mensaje.contains("Medico")){
-                        System.out.println("Mensaje recibido de un medico y debe enviarse solo a los medios: " + mensaje);
-                    }
+                    cliente.salida.writeUTF(mensaje);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    public static void enviarMensajePrivado(String mensaje, String nombre) {
+        for (ClienteHandler cliente : clientes) {
+            if (cliente.nombre.equals(nombre)) {
+                try {
+                    System.out.println("Enviando mensaje privado a " + nombre);
                     cliente.salida.writeUTF(mensaje);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
     
-        private static class ClienteHandler implements Runnable {
-            private Socket socket;
-            private DataOutputStream salida;
     
-            public ClienteHandler(Socket socket) {
-                this.socket = socket;
-            }
-    
-            @Override
-            public void run() {
-                try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
-                    salida = new DataOutputStream(socket.getOutputStream());
-                    String mensaje;
-                    while ((mensaje = entrada.readUTF()) != null) {
+    private static class ClienteHandler implements Runnable {
+        private Socket socket;
+        private DataOutputStream salida;
+        public String nombre;
+
+        public ClienteHandler(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
+                salida = new DataOutputStream(socket.getOutputStream());
+                String mensaje;
+                nombre = obtenerNombre(entrada.readUTF());
+                System.err.println("Nuevo cliente conectado: " + nombre);
+                while ((mensaje = entrada.readUTF()) != null) {
+                    if (mensaje.startsWith("Privado:")) {
+                        // Mensaje privado
+                        
+                        int guion = mensaje.indexOf(" - ");
+                        if (guion != -1) {
+                            String nombreDestinatario = mensaje.substring(8, guion).trim();
+                            System.out.println("Nombre destinatario: " + nombreDestinatario);
+                            String mensajePrivado = mensaje.substring(guion + 3).trim();
+                            System.out.println("Privado de " + nombre + " a " + nombreDestinatario + ": " + mensajePrivado);
+                            enviarMensajePrivado("Privado de " + nombre + ": " + mensajePrivado, nombreDestinatario);
+                        } else {
+                            salida.writeUTF("Formato incorrecto para mensaje privado. Usa Privado:(nombre) - (rut):mensaje");
+                        }
+                    } else {
                         enviarMensajeATodos(mensaje);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
 
+        private static String obtenerNombre(String mensaje) {
+            int start = mensaje.indexOf("]") + 2;
+            int end = mensaje.indexOf(":", start);
+            if (start != -1 && end != -1) {
+            String nombreConRol = mensaje.substring(start, end).trim();
+            int rolIndex = nombreConRol.indexOf(" (");
+            if (rolIndex != -1) {
+                return nombreConRol.substring(0, rolIndex).trim();
+            }
+            return nombreConRol;
+            }
+            return null;
+        }
+    }
     public static void main(String[] args) {
         new Server();
     }

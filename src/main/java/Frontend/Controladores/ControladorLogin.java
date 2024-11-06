@@ -51,9 +51,8 @@ public class ControladorLogin implements ActionListener{
         if ("Médico".equals(tipoUsuario)) {
             autenticado = admin.autenticarMedico(medico.getString("nombre"), clave);
             if (autenticado) {
-                VistaMedico vistaMedico = new VistaMedico(rut, tipoUsuario);
-                vistaMedico.setTitle("Vista Médico: "+ medico.getString("nombre"));
-                vistaMedico.setVisible(true);
+                ControladorMedico controladorMedico = new ControladorMedico(rut, "Médico");
+                controladorMedico.iniciarVista();
                 vistaLogin.dispose(); // Cierra la ventana de login
             } else {
                 vistaLogin.mostrarMensaje("Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);

@@ -46,6 +46,8 @@ public class VistaLogin extends JFrame {
         botonLogin.addActionListener(listener);
     }
 
+   
+
     public String getRut() {
         return campoRut.getText();
     }
