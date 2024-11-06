@@ -82,7 +82,7 @@ public class ControladorLogin implements ActionListener{
                         break;
                     case "Exámenes":
                         VistaExamenes vistaExamenes = new VistaExamenes(rut, administrativo.getString("area"));
-                        vistaExamenes.setTitle("Vista Exaemenes: " + administrativo.getString("nombre"));
+                        vistaExamenes.setTitle("Vista Examenes: " + administrativo.getString("nombre"));
                         vistaExamenes.setVisible(true);
                         vistaLogin.dispose();// Cierra la ventana de login
                         break;

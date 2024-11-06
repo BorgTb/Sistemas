@@ -173,19 +173,19 @@ public class VistaExamenes extends JFrame {
                             String pestaña = partes[0];
                             String contenidoMensaje = partes[1];
                             switch (pestaña) {
-                                case "Medico":
+                                case "Medico-Examenes":
                                     mostrarMensajeMedico(contenidoMensaje);
                                     break;
                                 case "Auxiliar":
                                     mostrarMensajeAuxiliar(contenidoMensaje);
                                     break;
-                                case "Admision":
+                                case "Examenes-Admision":
                                     mostrarMensajeAdmision(contenidoMensaje);
                                     break;
-                                case "Pabellon":
+                                case "Examenes-Pabellon":
                                     mostrarMensajePabellon(contenidoMensaje);
                                     break;
-                                case "Examenes":
+                                case "Examenes-Examenes":
                                     mostrarMensajeExamenes(contenidoMensaje);
                                     break;
                             }
@@ -199,7 +199,7 @@ public class VistaExamenes extends JFrame {
     }
     
     private void enviarMensajeMedico() {
-        enviarMensaje("Medico", campoMensajeMedico, areaChatMedico);
+        enviarMensaje("Medico-Examenes", campoMensajeMedico, areaChatMedico);
     }
     
     private void enviarMensajeAuxiliar() {
@@ -207,15 +207,15 @@ public class VistaExamenes extends JFrame {
     }
     
     private void enviarMensajeAdmision() {
-        enviarMensaje("Admision", campoMensajeAdmision, areaChatAdmision);
+        enviarMensaje("Examenes-Admision", campoMensajeAdmision, areaChatAdmision);
     }
     
     private void enviarMensajePabellon() {
-        enviarMensaje("Pabellon", campoMensajePabellon, areaChatPabellon);
+        enviarMensaje("Examenes-Pabellon", campoMensajePabellon, areaChatPabellon);
     }
     
     private void enviarMensajeExamenes() {
-        enviarMensaje("Examenes", campoMensajeExamenes, areaChatExamenes);
+        enviarMensaje("Examenes-Examenes", campoMensajeExamenes, areaChatExamenes);
     }
     
     private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
@@ -224,12 +224,16 @@ public class VistaExamenes extends JFrame {
             String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
+                System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
                 System.out.println(entrada.readUTF());
                 campoMensaje.setText("");
             } catch (IOException e) {
+                System.err.println("Error al enviar el mensaje: " + e.getMessage());
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("El campo de mensaje está vacío, no se envía nada.");
         }
     }
     private void mostrarMensajeMedico(String mensaje) {
