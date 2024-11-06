@@ -158,7 +158,9 @@ public class VistaAdmin extends JFrame {
     public String getTipoUsuario() {
         return (String) comboTipoUsuario.getSelectedItem();
     }
-
+    public String getArea() {
+        return (String) area.getSelectedItem();
+    }
     public void limpiarCampos() {
         campoNombre.setText("");
         campoRut.setText("");

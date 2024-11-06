@@ -13,11 +13,12 @@ public class Administrador {
         data = Database.getInstance();
     }
 
-    public void crearCliente(String nombre, String rut, String correo, String clave, String tipoUsuario) {
+    public void crearCliente(String nombre, String rut, String correo, String clave, String tipoUsuario, String area) {
         MongoCollection<Document> coleccion;
 
         if ("Médico".equalsIgnoreCase(tipoUsuario)) {
             coleccion = data.getColeccion("Medicos");
+            area=null;
         } else if ("Administrativo".equalsIgnoreCase(tipoUsuario)) {
             coleccion = data.getColeccion("Administrativos");
         } else {
@@ -29,7 +30,8 @@ public class Administrador {
                                 .append("rut", rut)
                                 .append("correo", correo)
                                 .append("clave", clave)
-                                .append("tipoUsuario", tipoUsuario);
+                                .append("tipoUsuario", tipoUsuario)
+                                .append("area", area);
 
         try {
             coleccion.insertOne(cliente);
@@ -62,8 +64,18 @@ public class Administrador {
         System.out.println("Cliente con RUT " + rut + " eliminado.");
     }
 
-    public Document retornarCliente(String rut) {
-        MongoCollection<Document> collection = data.getColeccion("Clientes");
+    public Document retornarMedico(String rut) {
+        MongoCollection<Document> collection = data.getColeccion("Medicos");
+        Document cliente = collection.find(Filters.eq("rut", rut)).first();
+        if (cliente != null) {
+            return cliente;
+        } else {
+            System.out.println("Cliente con RUT " + rut + " no encontrado.");
+            return null;
+        }
+    }
+    public Document retornarAdministrativo(String rut) {
+        MongoCollection<Document> collection = data.getColeccion("Administrativos");
         Document cliente = collection.find(Filters.eq("rut", rut)).first();
         if (cliente != null) {
             return cliente;

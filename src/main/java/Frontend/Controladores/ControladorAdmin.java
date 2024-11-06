@@ -27,13 +27,14 @@ public class ControladorAdmin {
             String correo = vista.getCorreo();
             String clave = vista.getClave();
             String tipoUsuario = vista.getTipoUsuario();
+            String area =  vista.getArea();
 
             if (nombre.isEmpty() || rut.isEmpty() || correo.isEmpty() || clave.isEmpty() || tipoUsuario.isEmpty()) {
                 System.out.println("Todos los campos deben estar llenos.");
                 return;
             }
 
-            administrador.crearCliente(nombre, rut, correo, clave, tipoUsuario);
+            administrador.crearCliente(nombre, rut, correo, clave, tipoUsuario,area);
             vista.limpiarCampos();
         }
     }

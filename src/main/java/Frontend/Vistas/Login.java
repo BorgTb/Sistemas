@@ -4,6 +4,9 @@ import Backend.Administrador;
 import Frontend.Vistas.VistaCliente;
 
 import javax.swing.*;
+
+import org.bson.Document;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,23 +48,25 @@ public class Login extends JFrame {
                 String clave = new String(campoClave.getPassword());
                 String tipoUsuario = (String) comboTipoUsuario.getSelectedItem();
                 Administrador admin = new Administrador();
+                Document medico = admin.retornarMedico(rut);
+                Document administrativo = admin.retornarAdministrativo(rut);
                 boolean autenticado = false;
                 if ("Médico".equals(tipoUsuario)) {
-                    autenticado = admin.autenticarMedico(rut, clave);
+                    autenticado = admin.autenticarMedico(medico.getString("nombre"), clave);
                     if (autenticado) {
-                        vistaCliente = new VistaCliente();
-                        vistaCliente.setTitle("Vista Médico");
-                        vistaCliente.setVisible(true);
+                        VistaMedico vistaMedico = new VistaMedico(rut, tipoUsuario);
+                        vistaMedico.setTitle("Vista Médico: "+ medico.getString("nombre"));
+                        vistaMedico.setVisible(true);
                         dispose(); // Cierra la ventana de login
                     } else {
                         JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
                     }
                 } else if ("Administrativo".equals(tipoUsuario)) {
-                    autenticado = admin.autenticarAdministrativo(rut, clave);
+                    autenticado = admin.autenticarAdministrativo(administrativo.getString("nombre"), clave);
                     if (autenticado) {
-                        vistaCliente = new VistaCliente();
-                        vistaCliente.setTitle("Vista Administrativo");
-                        vistaCliente.setVisible(true);
+                        VistaAdministrativo vistaAdministrativo = new VistaAdministrativo(rut, administrativo.getString("area"));
+                        vistaAdministrativo.setTitle("Vista Administrativo");
+                        vistaAdministrativo.setVisible(true);
                         dispose(); // Cierra la ventana de login
                     } else {
                         JOptionPane.showMessageDialog(Login.this, "Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);

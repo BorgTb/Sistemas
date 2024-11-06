@@ -28,7 +28,7 @@ public class Cliente implements Runnable {
             while (true) {
                 String mensaje = entrada.readUTF();
                 System.out.println("Mensaje recibido: " + mensaje);
-                servidor.enviarAMensajes(mensaje); // Enviar mensaje a todos los clientes
+                servidor.enviarMensajeATodos(mensaje); // Enviar mensaje a todos los clientes
             }
         } catch (Exception e) {
             System.out.println("Error: " + e);
