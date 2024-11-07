@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class gestorArchivos {
+    private String fileDirectory = "./src/main/java/Chats";
+
+
     public void guardarChat(String grupo, String mensaje) {
         String fileName = grupo + ".txt";
         String filePath = Paths.get("./src/main/java/Chats", fileName).toString();
@@ -34,7 +37,7 @@ public class gestorArchivos {
     }
     public List<String> leerChats(String grupo) {
         List<String> chats = new ArrayList<>();
-        String fileName = grupo + ".txt";
+        String fileName = fileDirectory+"/"+grupo + ".txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
