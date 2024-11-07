@@ -49,15 +49,11 @@ public class ControladorLogin implements ActionListener{
         Document administrativo = admin.retornarAdministrativo(rut);
         boolean autenticado = false;
         if ("Médico".equals(tipoUsuario)) {
-            if (medico != null) {
-                autenticado = admin.autenticarMedico(rut, clave);
-                if (autenticado) {
-                    ControladorMedico controladorMedico = new ControladorMedico(rut, "Medico");
-                    controladorMedico.iniciarVista();
-                    vistaLogin.dispose(); // Cierra la ventana de login
-                } else {
-                    vistaLogin.mostrarMensaje("Usuario o clave incorrectos", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
-                }
+            autenticado = admin.autenticarMedico(rut, clave);
+            if (autenticado) {
+                ControladorMedico controladorMedico = new ControladorMedico(rut, "Médico");
+                controladorMedico.iniciarVista();
+                vistaLogin.dispose(); // Cierra la ventana de login
             } else {
                 vistaLogin.mostrarMensaje("Usuario no encontrado", "Error de autenticación", JOptionPane.ERROR_MESSAGE);
             }

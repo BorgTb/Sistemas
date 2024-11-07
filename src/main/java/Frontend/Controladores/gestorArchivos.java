@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class gestorArchivos {
+    private String fileDirectory = "./src/main/java/Chats";
+
     public void guardarChat(String grupo, String mensaje) {
         String fileName = grupo + ".txt";
         String filePath = Paths.get("Sistemas/src/main/java/Chats", fileName).toString();
@@ -32,6 +34,7 @@ public class gestorArchivos {
             e.printStackTrace();
         }
     }
+
     public List<String> leerChats(String grupo) {
         List<String> chats = new ArrayList<>();
         String fileName = grupo + ".txt";
@@ -47,4 +50,25 @@ public class gestorArchivos {
         }
         return chats;
     }
+
+    public List<String> leerChatsPrivados(String emisor, String receptor) {
+        List<String> chats = new ArrayList<>();
+
+        String fileName = fileDirectory + "/" + emisor + "-" + receptor + ".txt";
+
+        if (!Paths.get(fileName).toFile().exists()) {
+            fileName = fileDirectory + "/" + receptor + "-" + emisor + ".txt";
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                chats.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return chats;
+    }
+
 }

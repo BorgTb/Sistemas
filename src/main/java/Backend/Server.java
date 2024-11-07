@@ -27,13 +27,13 @@ public class Server {
     }
 
     public static void enviarMensajeATodos(String mensaje) {
-            for (ClienteHandler cliente : clientes) {
-                try {
-                    cliente.salida.writeUTF(mensaje);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        for (ClienteHandler cliente : clientes) {
+            try {
+                cliente.salida.writeUTF(mensaje);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
     }
 
     public static void enviarMensajePrivado(String mensaje, String nombre) {
@@ -48,8 +48,7 @@ public class Server {
             }
         }
     }
-    
-    
+
     private static class ClienteHandler implements Runnable {
         private Socket socket;
         private DataOutputStream salida;
@@ -64,22 +63,22 @@ public class Server {
             try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
                 salida = new DataOutputStream(socket.getOutputStream());
                 String mensaje;
+
+                this.nombre = entrada.readUTF();
+                
                 while ((mensaje = entrada.readUTF()) != null) {
-                    
-                    //System.err.println("Nuevo cliente conectado: " + nombre);
+                    // nombre es quien emiute el mensaje
+                    // System.err.println("Nuevo cliente conectado: " + nombre);
                     if (mensaje.startsWith("Privado:")) {
                         // Mensaje privado
-                        nombre = obtenerNombre(mensaje);
-                        int guion = mensaje.indexOf(" - ");
-                        if (guion != -1) {
-                            String nombreDestinatario = mensaje.substring(8, guion).trim();
-                            System.out.println("Nombre destinatario: " + nombreDestinatario);
-                            String mensajePrivado = mensaje.substring(guion + 3).trim();
-                            System.out.println("Privado de " + nombre + " a " + nombreDestinatario + ": " + mensajePrivado);
-                            enviarMensajePrivado("Privado de " + nombre + ": " + mensajePrivado, nombreDestinatario);
-                        } else {
-                            salida.writeUTF("Formato incorrecto para mensaje privado. Usa Privado:(nombre) - (rut):mensaje");
-                        }
+                        
+                        String nombreDestinatario = obtenerNombreDestinatario(mensaje);
+                        mensaje = parsearMensajePrivado(mensaje,this.nombre);;
+                        System.out.println("Mensaje privado: " + mensaje);
+                        System.out.println("Destinatario: " + nombreDestinatario);
+
+                        enviarMensajePrivado(mensaje, nombreDestinatario);
+
                     } else {
                         enviarMensajeATodos(mensaje);
                     }
@@ -89,21 +88,22 @@ public class Server {
             }
         }
 
-        private static String obtenerNombre(String mensaje) {
-            int start = mensaje.indexOf("]") + 2;
-            int end = mensaje.indexOf(":", start);
-            if (start != -1 && end != -1) {
-            String nombreConRol = mensaje.substring(start, end).trim();
-            int rolIndex = nombreConRol.indexOf(" (");
-            if (rolIndex != -1) {
-                return nombreConRol.substring(0, rolIndex).trim();
+        private String obtenerNombreDestinatario(String mensaje) {
+            String[] partes = mensaje.split(" ");
+            return partes[2].split(":")[0];
+        }
+
+        private String parsearMensajePrivado(String mensaje, String emisor) {
+            int index = mensaje.indexOf('[');
+            if (index != -1) {
+                mensaje = "PrivateMessage:"+" "+ emisor + mensaje.substring(index);
             }
-            return nombreConRol;
-            }
-            return null;
+            return mensaje;
         }
     }
+
     public static void main(String[] args) {
+        // Enviando mensaje privado a asd - 1: [11:20:13] 2 (Médico): saludame asd
         new Server();
     }
 }
