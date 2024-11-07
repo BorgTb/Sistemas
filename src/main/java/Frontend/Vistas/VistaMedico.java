@@ -135,6 +135,7 @@ public class VistaMedico extends JFrame {
         gestorArchivos.leerChats("medico-examenes").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
         gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
 
+
         // Panel de lista de médicos
         listaMedicos = new JList<>();
         JScrollPane scrollListaMedicos = new JScrollPane(listaMedicos);
@@ -184,7 +185,10 @@ public class VistaMedico extends JFrame {
             tabbedPane.setSelectedComponent(chatsAbiertos.get(medico));
             return;
         }
-
+        
+        //medico -> recibe el mensaje y esta por su rut 
+        // nombreUsuario -> envia el mensaje y esta por su rut
+        
         JPanel panelChatPrivado = new JPanel(new BorderLayout());
         JTextArea areaChatPrivado = new JTextArea();
         areaChatPrivado.setEditable(false);
@@ -222,8 +226,12 @@ public class VistaMedico extends JFrame {
         tabbedPane.setTabComponentAt(index, tabPanel);
         tabbedPane.setSelectedComponent(panelChatPrivado);
 
+        gestorArchivos.leerChatsPrivados(nombreUsuario, medico.split(" ")[2]).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
+        
+
         chatsAbiertos.put(medico, panelChatPrivado);
         areasDeChatPrivado.put(medico.split(" ")[2], areaChatPrivado);
+        
 
         botonEnviarMensajePrivado.addActionListener(new ActionListener() {
             @Override
@@ -235,7 +243,8 @@ public class VistaMedico extends JFrame {
                     try {
                         System.out.println("Enviando mensaje privado a " + medico + ": " + mensajeFormateado);
                         areaChatPrivado.append(mensajeFormateado + "\n");
-                        gestorArchivos.guardarChat("medico-" + medico.split(" ")[2], mensajeFormateado);
+                        gestorArchivos.guardarChat(nombreUsuario+"-"+medico.split(" ")[2], mensajeFormateado);
+                        gestorArchivos.guardarChat(medico.split(" ")[2]+"-"+nombreUsuario, mensajeFormateado);
                         salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
                         campoMensajePrivado.setText("");
                     } catch (IOException ex) {
