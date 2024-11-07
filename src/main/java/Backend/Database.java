@@ -1,5 +1,10 @@
 package Backend;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -11,7 +16,7 @@ public class Database {
     private MongoClient mongoClient;
     private MongoDatabase database;
     
-    private static final String URI = "mongodb+srv://admin123:123admin123@data.lohu3.mongodb.net/?retryWrites=true&w=majority&appName=Data";
+    private static final String URI = "mongodb://admin123:123admin123@data-shard-00-00.lohu3.mongodb.net:27017,data-shard-00-01.lohu3.mongodb.net:27017,data-shard-00-02.lohu3.mongodb.net:27017/?ssl=true&replicaSet=atlas-2z76ir-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Data";
     private static final String DATABASE_NAME = "Data";
 
     // Constructor privado para evitar instanciación directa
@@ -34,10 +39,18 @@ public class Database {
 
     // Método para obtener una colección de la base de datos
     @SuppressWarnings("rawtypes")
-    public MongoCollection getColeccion(String nombreColeccion) {
+    public MongoCollection<Document> getColeccion(String nombreColeccion) {
         return database.getCollection(nombreColeccion);
     }
 
+    public List<Document> getMedicos() {
+        MongoCollection<Document> collection = getColeccion("Medicos");
+        List<Document> medicos = collection.find().into(new ArrayList<>());
+        if (medicos.isEmpty()) {
+            System.out.println("No se encontraron médicos.");
+        }
+        return medicos;
+    }
 
    
 }
