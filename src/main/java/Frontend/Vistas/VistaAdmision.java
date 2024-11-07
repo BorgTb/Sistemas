@@ -18,6 +18,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Frontend.Controladores.gestorArchivos;
+
 public class VistaAdmision extends JFrame {
     private JTextArea areaChatMedico;
     private JTextField campoMensajeMedico;
@@ -39,6 +41,7 @@ public class VistaAdmision extends JFrame {
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
+    private gestorArchivos gestorArchivos = new gestorArchivos();
 
     public VistaAdmision(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
@@ -52,13 +55,7 @@ public class VistaAdmision extends JFrame {
         JPanel panelMedico = new JPanel(new BorderLayout());
         areaChatMedico = new JTextArea();
         areaChatMedico.setEditable(false);
-        campoMensajeMedico = new JTextField();
-        botonEnviarMensajeMedico = new JButton("Enviar");
         panelMedico.add(new JScrollPane(areaChatMedico), BorderLayout.CENTER);
-        JPanel panelInputMedico = new JPanel(new BorderLayout());
-        panelInputMedico.add(campoMensajeMedico, BorderLayout.CENTER);
-        panelInputMedico.add(botonEnviarMensajeMedico, BorderLayout.EAST);
-        panelMedico.add(panelInputMedico, BorderLayout.SOUTH);
         tabbedPane.addTab("Chat Médico", panelMedico);
 
 
@@ -113,16 +110,15 @@ public class VistaAdmision extends JFrame {
          panelInputExamenes.add(botonEnviarMensajeExamenes, BorderLayout.EAST);
          panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
          tabbedPane.addTab("Chat Exámenes", panelExamenes);
+         gestorArchivos.leerChats("admision-admision").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-admision").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
+        gestorArchivos.leerChats("admision-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
+        gestorArchivos.leerChats("examenes-admision").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
+        gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
          add(tabbedPane);
          conectarAlServidor();
          escucharMensajes();
 
-         botonEnviarMensajeMedico.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enviarMensajeMedico();
-            }
-        });
         botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -198,9 +194,6 @@ public class VistaAdmision extends JFrame {
         }).start();
     }
     
-    private void enviarMensajeMedico() {
-        enviarMensaje("Medico-Admision", campoMensajeMedico, areaChatMedico);
-    }
     
     private void enviarMensajeAuxiliar() {
         enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
@@ -235,19 +228,26 @@ public class VistaAdmision extends JFrame {
             System.out.println("El campo de mensaje está vacío, no se envía nada.");
         }
     }
-    private void mostrarMensajeMedico(String mensaje) {
+    public void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
     }
-    private void mostrarMensajeAdmision(String mensaje) {
+
+    public void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
+        gestorArchivos.guardarChat("admision-admision", mensaje);
     }
-    private void mostrarMensajePabellon(String mensaje) {
+
+    public void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
+        gestorArchivos.guardarChat("admision-pabellon", mensaje);
     }
-    private void mostrarMensajeExamenes(String mensaje) {
+
+    public void  mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
+        gestorArchivos.guardarChat("examenes-admision", mensaje);
     }
-    private void mostrarMensajeAuxiliar(String mensaje) {
+
+    public void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
     }
 }
