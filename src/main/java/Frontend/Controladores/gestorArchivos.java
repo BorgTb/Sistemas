@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class gestorArchivos {
-    private String fileDirectory = "./src/main/java/Chats";
+    private String fileDirectory = "Sistemas/src/main/java/Chats";
 
     public void guardarChat(String grupo, String mensaje) {
         String fileName = grupo + ".txt";
