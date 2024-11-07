@@ -251,27 +251,22 @@ public class VistaMedico extends JFrame {
 
     public void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
-        gestorArchivos.guardarChat("medico-medico", mensaje);
     }
 
     public void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
-        gestorArchivos.guardarChat("medico-admision", mensaje);
     }
 
     public void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
-        gestorArchivos.guardarChat("medico-pabellon", mensaje);
     }
 
     public void mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
-        gestorArchivos.guardarChat("medico-examenes", mensaje);
     }
 
     public void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
-        gestorArchivos.guardarChat("auxiliar", mensaje);
     }
 
 
