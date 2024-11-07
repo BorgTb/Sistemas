@@ -11,9 +11,9 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,12 +27,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionListener;
 
-import org.bson.Document;
-
-import Backend.Database;
+import Frontend.Controladores.gestorArchivos;
 
 public class VistaMedico extends JFrame {
     private JTextArea areaChatMedico;
+    private JTextArea areaChatMedicoPrivado;
     private JTextField campoMensajeMedico;
     private JButton botonEnviarMensajeMedico;
     private JTextArea areaChatAuxiliar;
@@ -47,15 +46,13 @@ public class VistaMedico extends JFrame {
     private JButton botonEnviarMensajeAdmision;
     private JButton botonEnviarMensajePabellon;
     private JButton botonEnviarMensajeExamenes;
-    private String nombreUsuario;
-    private String rolUsuario;
-    private Socket socket;
-    private DataOutputStream salida;
-    private DataInputStream entrada;
     private JList listaMedicos;
     private DefaultListModel modeloListaMedicos;
     private JTabbedPane tabbedPane = new JTabbedPane();
     private Map<String, JPanel> chatsAbiertos;
+    private gestorArchivos gestorArchivos = new gestorArchivos();
+    private Map<String, JTextArea> areasDeChatPrivado = new HashMap<>();
+    
 
     public VistaMedico() {
         chatsAbiertos = new HashMap<>();
@@ -132,6 +129,13 @@ public class VistaMedico extends JFrame {
         panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
         tabbedPane.addTab("Chat Exámenes", panelExamenes);
 
+        gestorArchivos.leerChats("medico-medico").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-admision").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-examenes").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
+        gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
+
+
         // Panel de lista de médicos
         listaMedicos = new JList<>();
         JScrollPane scrollListaMedicos = new JScrollPane(listaMedicos);
@@ -150,8 +154,6 @@ public class VistaMedico extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
         add(panelListaMedicos, BorderLayout.EAST);
-        
-  
         
     }
 
@@ -178,13 +180,15 @@ public class VistaMedico extends JFrame {
         setVisible(true);
     }
 
-    public void abrirChatPrivado(String medico) {
+    public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario, String rolUsuario) {
         if (chatsAbiertos.containsKey(medico)) {
-            // Si el chat ya está abierto, seleccionarlo
             tabbedPane.setSelectedComponent(chatsAbiertos.get(medico));
             return;
         }
-
+        
+        //medico -> recibe el mensaje y esta por su rut 
+        // nombreUsuario -> envia el mensaje y esta por su rut
+        
         JPanel panelChatPrivado = new JPanel(new BorderLayout());
         JTextArea areaChatPrivado = new JTextArea();
         areaChatPrivado.setEditable(false);
@@ -196,12 +200,11 @@ public class VistaMedico extends JFrame {
         panelInputPrivado.add(botonEnviarMensajePrivado, BorderLayout.EAST);
         panelChatPrivado.add(panelInputPrivado, BorderLayout.SOUTH);
 
-        // Crear un panel para la pestaña con un botón de cerrar
         JPanel tabPanel = new JPanel(new BorderLayout());
         tabPanel.setOpaque(false);
         JLabel tabLabel = new JLabel("Chat con " + medico);
         JButton closeButton = new JButton("X");
-        closeButton.setMargin(new Insets(0, 10, 0, 0));
+        closeButton.setMargin(new Insets(0, 20, 0, 0));
         closeButton.setBorder(null);
         closeButton.addActionListener(new ActionListener() {
             @Override
@@ -210,46 +213,65 @@ public class VistaMedico extends JFrame {
                 if (index != -1) {
                     tabbedPane.remove(index);
                     chatsAbiertos.remove(medico);
+                    areasDeChatPrivado.remove(medico);
                 }
             }
         });
 
-        tabPanel.add(tabLabel, BorderLayout.CENTER);
+        tabPanel.add(tabLabel, BorderLayout.WEST);
         tabPanel.add(closeButton, BorderLayout.EAST);
 
-        tabbedPane.addTab(null, panelChatPrivado);
-        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panelChatPrivado), tabPanel);
+        tabbedPane.addTab("Chat con " + medico, panelChatPrivado);
+        int index = tabbedPane.indexOfComponent(panelChatPrivado);
+        tabbedPane.setTabComponentAt(index, tabPanel);
+        tabbedPane.setSelectedComponent(panelChatPrivado);
+
+        gestorArchivos.leerChatsPrivados(nombreUsuario, medico.split(" ")[2]).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
+        
+
         chatsAbiertos.put(medico, panelChatPrivado);
+        areasDeChatPrivado.put(medico.split(" ")[2], areaChatPrivado);
+        
 
         botonEnviarMensajePrivado.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                enviarMensajePrivado(medico, campoMensajePrivado, areaChatPrivado);
+                String mensaje = campoMensajePrivado.getText();
+                if (!mensaje.isEmpty()) {
+                    String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
+                    String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
+                    try {
+                        System.out.println("Enviando mensaje privado a " + medico + ": " + mensajeFormateado);
+                        areaChatPrivado.append(mensajeFormateado + "\n");
+                        gestorArchivos.guardarChat(nombreUsuario+"-"+medico.split(" ")[2], mensajeFormateado);
+                        gestorArchivos.guardarChat(medico.split(" ")[2]+"-"+nombreUsuario, mensajeFormateado);
+                        salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
+                        campoMensajePrivado.setText("");
+                    } catch (IOException ex) {
+                        System.err.println("Error al enviar el mensaje privado: " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                } else {
+                    System.out.println("El campo de mensaje está vacío, no se envía nada.");
+                }
             }
         });
     }
 
-    private void enviarMensajePrivado(String medico, JTextField campoMensaje, JTextArea areaChat) {
-        String mensaje = campoMensaje.getText();
-        if (!mensaje.isEmpty()) {
-            String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
-            String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
-            try {
-                System.out.println("Enviando mensaje privado a " + medico + ": " + mensajeFormateado);
-                salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
-                campoMensaje.setText("");
-            } catch (IOException e) {
-                System.err.println("Error al enviar el mensaje privado: " + e.getMessage());
-                e.printStackTrace();
-            }
+    
+
+
+    public void mostrarMensajePrivado(String remitente, String mensaje) {
+        
+        JTextArea areaChatPrivado = areasDeChatPrivado.get(remitente);
+        if (areaChatPrivado != null) {
+            areaChatPrivado.append(mensaje + "\n");
         } else {
-            System.out.println("El campo de mensaje está vacío, no se envía nada.");
+            System.out.println("No se ha creado el JTextArea para el chat privado con " + remitente);
         }
     }
 
-    
-    
-   
+
     public void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
     }

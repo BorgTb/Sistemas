@@ -2,8 +2,10 @@ package Frontend.Controladores;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -16,23 +18,20 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.bson.Document;
-
-import Backend.Database;
 import Frontend.Vistas.VistaMedico;
 
 public class ControladorMedico implements ActionListener, ListSelectionListener {
-    private String nombreUsuario;
+    private String nombreUsuario; //este es el rut del medico
     private String rolUsuario;
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
     private VistaMedico vistaMedico;
     private DefaultListModel<String> modeloListaMedicos = new DefaultListModel<>();
+    gestorArchivos gestorArchivos = new gestorArchivos(); // Create an instance of the GestorArchivos class
 
     public ControladorMedico(String nombreUsuario, String rolUsuario) {
-        this.nombreUsuario = nombreUsuario;
+        this.nombreUsuario = nombreUsuario; // Asegúrate de que este es el rut del médico
         this.rolUsuario = rolUsuario;
         this.vistaMedico = new VistaMedico();
         this.vistaMedico.addActionListener(this);
@@ -52,6 +51,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF(nombreUsuario);
             System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,14 +59,19 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     }
 
     private void cargarMedicos() {
-        Database db = Database.getInstance();
-        List<Document> medicos = db.getMedicos();
-        for (Document medico : medicos) {
-            String nombreMedico = medico.getString("nombre");
-            String rutMedico = medico.getString("rut");
-            if (!nombreMedico.equals(nombreUsuario)) {
-                modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
+        try (BufferedReader br = new BufferedReader(new FileReader("Sistemas/src/main/java/Users/Medicos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(", ");
+                String nombreMedico = partes[0].split(": ")[1];
+                String rutMedico = partes[1].split(": ")[1];
+                if (!nombreMedico.equals(nombreUsuario)) {
+                    modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al cargar los médicos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -76,12 +81,12 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             public void run() {
                 try {
                     String mensaje;
-                    while ((mensaje = entrada.readUTF()) != null) {
-                        System.out.println("Mensaje recibido: " + mensaje);
-
-                        if (mensaje.contains("Privado")) {
-                            mensaje = convertirMensajePrivado(mensaje);
-                            System.out.println("Mensaje privado: " + mensaje);
+                    while ((mensaje = entrada.readUTF()) != null) {                       
+                        if (mensaje.contains("PrivateMessage")) {
+                            String emisor = mensaje.split(" ")[1].split("")[0]; //util para despues obtener la ventana exacta
+                            String remitente = mensaje.split(" ")[1].split("\\[")[0];
+                            String contenido = convertirMensajePrivado(mensaje);
+                            vistaMedico.mostrarMensajePrivado(remitente, contenido);
                         } else {
                             String[] partes = mensaje.split(":", 2);
                             if (partes.length == 2) {
@@ -106,7 +111,6 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                                 }
                             }
                         }
-
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -155,7 +159,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                         "¿Desea enviar un mensaje privado a " + selectedMedico + "?", "Mensaje Privado",
                         JOptionPane.YES_NO_OPTION);
                 if (response == JOptionPane.YES_OPTION) {
-                    vistaMedico.abrirChatPrivado(selectedMedico);
+                    vistaMedico.abrirChatPrivado(selectedMedico, this.salida, this.entrada, this.nombreUsuario, this.rolUsuario);
                 }
             }
         }
@@ -190,6 +194,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Call the guardarChat method on the instance
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());

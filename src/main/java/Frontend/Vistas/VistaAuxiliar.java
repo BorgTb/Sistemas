@@ -17,6 +17,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Frontend.Controladores.gestorArchivos;
+
 public class VistaAuxiliar extends JFrame {
     private JTextArea areaChatAuxiliar;
     private JTextField campoMensajeAuxiliar;
@@ -26,6 +28,7 @@ public class VistaAuxiliar extends JFrame {
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
+    private gestorArchivos gestorArchivos = new gestorArchivos();
 
     public VistaAuxiliar(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
@@ -46,7 +49,7 @@ public class VistaAuxiliar extends JFrame {
         panelInputAuxiliar.add(campoMensajeAuxiliar, BorderLayout.CENTER);
         panelInputAuxiliar.add(botonEnviarMensajeAuxiliar, BorderLayout.EAST);
         panelAuxiliar.add(panelInputAuxiliar, BorderLayout.SOUTH);
-
+        gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
         add(panelAuxiliar);
 
         conectarAlServidor();
@@ -65,6 +68,7 @@ public class VistaAuxiliar extends JFrame {
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF(nombreUsuario);
             System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,7 +106,6 @@ public class VistaAuxiliar extends JFrame {
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
-                System.out.println(entrada.readUTF());
                 campoMensaje.setText("");
             } catch (IOException e) {
                 e.printStackTrace();

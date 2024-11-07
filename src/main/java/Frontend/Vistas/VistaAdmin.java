@@ -71,7 +71,7 @@ public class VistaAdmin extends JFrame {
         gbc.gridy = 4;
         panelPrincipal.add(new JLabel("Tipo de Usuario:"), gbc);
         gbc.gridx = 1;
-        String[] tipos = {"Médico", "Administrativo"};
+        String[] tipos = {"Medico", "Administrativo"};
         comboTipoUsuario = new JComboBox<>(tipos);
         panelPrincipal.add(comboTipoUsuario, gbc);
 
@@ -79,7 +79,7 @@ public class VistaAdmin extends JFrame {
         gbc.gridy = 5;
         panelPrincipal.add(new JLabel("Área específica:"), gbc);
         gbc.gridx = 1;
-        String[] areaEspecifica = {"Admisión", "Pabellón", "Exámenes", "Auxiliar"};
+        String[] areaEspecifica = {"Admision", "Pabellon", "Examenes", "Auxiliar"};
         area = new JComboBox<>(areaEspecifica);
         area.setEnabled(false); // Inicialmente deshabilitado
         panelPrincipal.add(area, gbc);

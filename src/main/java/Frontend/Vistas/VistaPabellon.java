@@ -3,12 +3,16 @@ package Frontend.Vistas;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,10 +22,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Frontend.Controladores.gestorArchivos;
+
 public class VistaPabellon extends JFrame {
     private JTextArea areaChatMedico;
     private JTextField campoMensajeMedico;
-    private JButton botonEnviarMensajeMedico;
     private JTextArea areaChatAuxiliar;
     private JTextArea areaChatAdmision;
     private JTextArea areaChatPabellon;
@@ -39,6 +44,7 @@ public class VistaPabellon extends JFrame {
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
+    private gestorArchivos gestorArchivos = new gestorArchivos();
 
     public VistaPabellon(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
@@ -52,13 +58,7 @@ public class VistaPabellon extends JFrame {
         JPanel panelMedico = new JPanel(new BorderLayout());
         areaChatMedico = new JTextArea();
         areaChatMedico.setEditable(false);
-        campoMensajeMedico = new JTextField();
-        botonEnviarMensajeMedico = new JButton("Enviar");
         panelMedico.add(new JScrollPane(areaChatMedico), BorderLayout.CENTER);
-        JPanel panelInputMedico = new JPanel(new BorderLayout());
-        panelInputMedico.add(campoMensajeMedico, BorderLayout.CENTER);
-        panelInputMedico.add(botonEnviarMensajeMedico, BorderLayout.EAST);
-        panelMedico.add(panelInputMedico, BorderLayout.SOUTH);
         tabbedPane.addTab("Chat Médico", panelMedico);
 
 
@@ -113,16 +113,16 @@ public class VistaPabellon extends JFrame {
          panelInputExamenes.add(botonEnviarMensajeExamenes, BorderLayout.EAST);
          panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
          tabbedPane.addTab("Chat Exámenes", panelExamenes);
+
+         gestorArchivos.leerChats("pabellon-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
+         gestorArchivos.leerChats("medico-pabellon").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
+         gestorArchivos.leerChats("examenes-pabellon").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
+         gestorArchivos.leerChats("admision-pabellon").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
+         gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
          add(tabbedPane);
          conectarAlServidor();
          escucharMensajes();
 
-         botonEnviarMensajeMedico.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enviarMensajeMedico();
-            }
-        });
         botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -154,6 +154,7 @@ public class VistaPabellon extends JFrame {
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF(nombreUsuario);
             System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,10 +199,6 @@ public class VistaPabellon extends JFrame {
         }).start();
     }
     
-    private void enviarMensajeMedico() {
-        enviarMensaje("Medico-Pabellon", campoMensajeMedico, areaChatMedico);
-    }
-
     private void enviarMensajeAuxiliar() {
         enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
     }
@@ -226,6 +223,7 @@ public class VistaPabellon extends JFrame {
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado);
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());
@@ -250,4 +248,5 @@ public class VistaPabellon extends JFrame {
     private void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
     }
+
 }
