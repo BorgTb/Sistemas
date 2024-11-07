@@ -150,6 +150,7 @@ public class VistaAdmision extends JFrame {
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF(nombreUsuario);
             System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();

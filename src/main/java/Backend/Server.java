@@ -64,12 +64,15 @@ public class Server {
             try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
                 salida = new DataOutputStream(socket.getOutputStream());
                 String mensaje;
+                
+                this.nombre= entrada.readUTF();
+
                 while ((mensaje = entrada.readUTF()) != null) {
                     
                     //System.err.println("Nuevo cliente conectado: " + nombre);
                     if (mensaje.startsWith("Privado:")) {
                         // Mensaje privado
-                        nombre = obtenerNombre(mensaje);
+                        
                         int guion = mensaje.indexOf(" - ");
                         if (guion != -1) {
                             String nombreDestinatario = mensaje.substring(8, guion).trim();
