@@ -219,6 +219,7 @@ public class VistaAdmision extends JFrame {
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado);
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());
@@ -234,17 +235,14 @@ public class VistaAdmision extends JFrame {
 
     public void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
-        gestorArchivos.guardarChat("admision-admision", mensaje);
     }
 
     public void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
-        gestorArchivos.guardarChat("admision-pabellon", mensaje);
     }
 
     public void  mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
-        gestorArchivos.guardarChat("examenes-admision", mensaje);
     }
 
     public void mostrarMensajeAuxiliar(String mensaje) {

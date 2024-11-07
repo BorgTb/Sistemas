@@ -30,6 +30,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     private DataInputStream entrada;
     private VistaMedico vistaMedico;
     private DefaultListModel<String> modeloListaMedicos = new DefaultListModel<>();
+    gestorArchivos gestorArchivos = new gestorArchivos(); // Create an instance of the GestorArchivos class
 
     public ControladorMedico(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
@@ -190,6 +191,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Call the guardarChat method on the instance
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());

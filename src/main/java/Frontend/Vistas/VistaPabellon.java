@@ -222,6 +222,7 @@ public class VistaPabellon extends JFrame {
             try {
                 System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado);
                 campoMensaje.setText("");
             } catch (IOException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());
@@ -239,7 +240,6 @@ public class VistaPabellon extends JFrame {
     }
     private void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
-        gestorArchivos.guardarChat("pabellon-pabellon", mensaje);
     }
     private void mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
@@ -248,19 +248,4 @@ public class VistaPabellon extends JFrame {
         areaChatAuxiliar.append(mensaje + "\n");
     }
 
-    public List<String> leerChats(String grupo) {
-        List<String> chats = new ArrayList<>();
-        String fileName = "chats.txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith(grupo + ":")) {
-                    chats.add(line);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return chats;
-    }
 }

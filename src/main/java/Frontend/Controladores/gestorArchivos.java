@@ -6,9 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 public class gestorArchivos {
         public void guardarChat(String grupo, String mensaje) {
@@ -21,16 +19,16 @@ public class gestorArchivos {
         }
     }
     public List<String> leerChats(String grupo) {
-        Set<String> uniqueChats = new LinkedHashSet<>();
+        List<String> chats = new ArrayList<>();
         String fileName = grupo + ".txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                uniqueChats.add(line);
+                chats.add(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>(uniqueChats);
+        return chats;
     }
 }
