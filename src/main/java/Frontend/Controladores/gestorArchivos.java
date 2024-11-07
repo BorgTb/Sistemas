@@ -13,8 +13,8 @@ import java.util.List;
 public class gestorArchivos {
     public void guardarChat(String grupo, String mensaje) {
         String fileName = grupo + ".txt";
-        String filePath = Paths.get("Sistemas/src/main/java/Chats", fileName).toString();
-        File directory = new File("Sistemas/src/main/java/Chats");
+        String filePath = Paths.get("./src/main/java/Chats", fileName).toString();
+        File directory = new File("./src/main/java/Chats");
 
         if (!directory.exists()) {
             if (directory.mkdirs()) {

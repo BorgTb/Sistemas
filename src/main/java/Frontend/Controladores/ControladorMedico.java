@@ -79,10 +79,9 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             public void run() {
                 try {
                     String mensaje;
-                    while ((mensaje = entrada.readUTF()) != null) {
-                       
+                    while ((mensaje = entrada.readUTF()) != null) {                       
                         if (mensaje.contains("PrivateMessage")) {
-                            String emisor = mensaje.split(" ")[1].split("")[0];
+                            String emisor = mensaje.split(" ")[1].split("")[0]; //util para despues obtener la ventana exacta
                             String remitente = mensaje.split(" ")[1].split("\\[")[0];
                             String contenido = convertirMensajePrivado(mensaje);
                             vistaMedico.mostrarMensajePrivado(remitente, contenido);

@@ -235,6 +235,7 @@ public class VistaMedico extends JFrame {
                     try {
                         System.out.println("Enviando mensaje privado a " + medico + ": " + mensajeFormateado);
                         areaChatPrivado.append(mensajeFormateado + "\n");
+                        gestorArchivos.guardarChat("medico-" + medico.split(" ")[2], mensajeFormateado);
                         salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
                         campoMensajePrivado.setText("");
                     } catch (IOException ex) {
