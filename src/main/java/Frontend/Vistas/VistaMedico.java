@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
@@ -27,9 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionListener;
 
-import org.bson.Document;
-
-import Backend.Database;
+import Frontend.Controladores.gestorArchivos;
 
 public class VistaMedico extends JFrame {
     private JTextArea areaChatMedico;
@@ -56,6 +53,7 @@ public class VistaMedico extends JFrame {
     private DefaultListModel modeloListaMedicos;
     private JTabbedPane tabbedPane = new JTabbedPane();
     private Map<String, JPanel> chatsAbiertos;
+    private gestorArchivos gestorArchivos = new gestorArchivos();
 
     public VistaMedico() {
         chatsAbiertos = new HashMap<>();
@@ -132,6 +130,12 @@ public class VistaMedico extends JFrame {
         panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
         tabbedPane.addTab("Chat Exámenes", panelExamenes);
 
+        gestorArchivos.leerChats("medico-medico").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-admision").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-examenes").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
+        gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
+
         // Panel de lista de médicos
         listaMedicos = new JList<>();
         JScrollPane scrollListaMedicos = new JScrollPane(listaMedicos);
@@ -150,8 +154,6 @@ public class VistaMedico extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
         add(panelListaMedicos, BorderLayout.EAST);
-        
-  
         
     }
 
@@ -201,7 +203,7 @@ public class VistaMedico extends JFrame {
         tabPanel.setOpaque(false);
         JLabel tabLabel = new JLabel("Chat con " + medico);
         JButton closeButton = new JButton("X");
-        closeButton.setMargin(new Insets(0, 10, 0, 0));
+        closeButton.setMargin(new Insets(0, 20, 0, 0));
         closeButton.setBorder(null);
         closeButton.addActionListener(new ActionListener() {
             @Override
@@ -247,27 +249,29 @@ public class VistaMedico extends JFrame {
         }
     }
 
-    
-    
-   
     public void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
+        gestorArchivos.guardarChat("medico-medico", mensaje);
     }
 
     public void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
+        gestorArchivos.guardarChat("medico-admision", mensaje);
     }
 
     public void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
+        gestorArchivos.guardarChat("medico-pabellon", mensaje);
     }
 
     public void mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
+        gestorArchivos.guardarChat("medico-examenes", mensaje);
     }
 
     public void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
+        gestorArchivos.guardarChat("auxiliar", mensaje);
     }
 
 
