@@ -49,7 +49,7 @@ public class ControladorLogin implements ActionListener{
         Document administrativo = admin.retornarAdministrativo(rut);
         boolean autenticado = false;
         if ("Médico".equals(tipoUsuario)) {
-            autenticado = admin.autenticarMedico(medico.getString("nombre"), clave);
+            autenticado = admin.autenticarMedico(rut, clave);
             if (autenticado) {
                 ControladorMedico controladorMedico = new ControladorMedico(rut, "Médico");
                 controladorMedico.iniciarVista();

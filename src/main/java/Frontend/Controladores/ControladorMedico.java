@@ -23,7 +23,7 @@ import Backend.Database;
 import Frontend.Vistas.VistaMedico;
 
 public class ControladorMedico implements ActionListener, ListSelectionListener {
-    private String nombreUsuario;
+    private String nombreUsuario; //este es el rut del medico
     private String rolUsuario;
     private Socket socket;
     private DataOutputStream salida;
@@ -79,11 +79,12 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        System.out.println("Mensaje recibido: " + mensaje);
-
-                        if (mensaje.contains("Privado")) {
-                            mensaje = convertirMensajePrivado(mensaje);
-                            System.out.println("Mensaje privado: " + mensaje);
+                       
+                        if (mensaje.contains("PrivateMessage")) {
+                            String emisor = mensaje.split(" ")[1].split("")[0];
+                            String remitente = mensaje.split(" ")[1].split("\\[")[0];
+                            String contenido = convertirMensajePrivado(mensaje);
+                            vistaMedico.mostrarMensajePrivado(remitente, contenido);
                         } else {
                             String[] partes = mensaje.split(":", 2);
                             if (partes.length == 2) {
@@ -108,7 +109,6 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                                 }
                             }
                         }
-
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -157,7 +157,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                         "¿Desea enviar un mensaje privado a " + selectedMedico + "?", "Mensaje Privado",
                         JOptionPane.YES_NO_OPTION);
                 if (response == JOptionPane.YES_OPTION) {
-                    vistaMedico.abrirChatPrivado(selectedMedico);
+                    vistaMedico.abrirChatPrivado(selectedMedico, this.salida, this.entrada, this.nombreUsuario, this.rolUsuario);
                 }
             }
         }
