@@ -33,7 +33,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     gestorArchivos gestorArchivos = new gestorArchivos(); // Create an instance of the GestorArchivos class
 
     public ControladorMedico(String nombreUsuario, String rolUsuario) {
-        this.nombreUsuario = nombreUsuario;
+        this.nombreUsuario = nombreUsuario; // Asegúrate de que este es el rut del médico
         this.rolUsuario = rolUsuario;
         this.vistaMedico = new VistaMedico();
         this.vistaMedico.addActionListener(this);
@@ -66,7 +66,8 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
         for (Document medico : medicos) {
             String nombreMedico = medico.getString("nombre");
             String rutMedico = medico.getString("rut");
-            if (!nombreMedico.equals(nombreUsuario)) {
+            // Filtra al médico que está en la sesión
+            if (!rutMedico.equals(nombreUsuario)) {
                 modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
             }
         }
