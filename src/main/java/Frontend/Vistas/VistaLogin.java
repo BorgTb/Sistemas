@@ -1,7 +1,6 @@
 package Frontend.Vistas;
 
 import Backend.Administrador;
-import Frontend.Vistas.VistaCliente;
 
 import javax.swing.*;
 
