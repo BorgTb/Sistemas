@@ -34,7 +34,7 @@ public class ControladorAdmin {
                 return;
             }
 
-            administrador.crearCliente(nombre, rut, correo, clave, tipoUsuario,area);
+            administrador.guardarClienteEnArchivo(nombre, rut,  correo,  clave,  tipoUsuario, area);
             vista.limpiarCampos();
         }
     }

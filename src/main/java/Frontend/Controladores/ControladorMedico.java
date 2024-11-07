@@ -2,8 +2,10 @@ package Frontend.Controladores;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -16,10 +18,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.bson.Document;
-
-import Backend.Database;
 import Frontend.Vistas.VistaMedico;
 
 public class ControladorMedico implements ActionListener, ListSelectionListener {
@@ -60,14 +58,19 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     }
 
     private void cargarMedicos() {
-        Database db = Database.getInstance();
-        List<Document> medicos = db.getMedicos();
-        for (Document medico : medicos) {
-            String nombreMedico = medico.getString("nombre");
-            String rutMedico = medico.getString("rut");
-            if (!nombreMedico.equals(nombreUsuario)) {
-                modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
+        try (BufferedReader br = new BufferedReader(new FileReader("Sistemas/src/main/java/Users/Medicos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(", ");
+                String nombreMedico = partes[0].split(": ")[1];
+                String rutMedico = partes[1].split(": ")[1];
+                if (!nombreMedico.equals(nombreUsuario)) {
+                    modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al cargar los médicos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

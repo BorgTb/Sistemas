@@ -35,7 +35,9 @@ public class gestorArchivos {
     public List<String> leerChats(String grupo) {
         List<String> chats = new ArrayList<>();
         String fileName = grupo + ".txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+        String filePath = Paths.get("Sistemas/src/main/java/Chats", fileName).toString();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 chats.add(line);
