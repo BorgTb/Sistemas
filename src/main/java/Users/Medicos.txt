@@ -1,6 +1,6 @@
-Nombre: med1, RUT: 1, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true
-Nombre: med2, RUT: 2, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true
-Nombre: med3, RUT: 3, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: med1, RUT: 1, Correo: asd, Clave: 123, TipoUsuario: Medico, Area: null, PrimerInicio: false
+Nombre: med2, RUT: 2, Correo: asd, Clave: 123, TipoUsuario: Medico, Area: null, PrimerInicio: false
+Nombre: med3, RUT: 3, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: false
 Nombre: med4, RUT: 4, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true
 Nombre: med5, RUT: 5, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true
 Nombre: med6, RUT: 6, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: true

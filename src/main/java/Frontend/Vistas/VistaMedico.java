@@ -312,7 +312,6 @@ public class VistaMedico extends JFrame {
 
 
     public void mostrarMensajePrivado(String remitente, String mensaje) {
-        
         JTextArea areaChatPrivado = areasDeChatPrivado.get(remitente);
         if (areaChatPrivado != null) {
             areaChatPrivado.append(mensaje + "\n");

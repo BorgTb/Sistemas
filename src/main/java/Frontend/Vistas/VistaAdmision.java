@@ -7,13 +7,16 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -248,15 +251,33 @@ public class VistaAdmision extends JFrame {
         }
     }
 
-    private void actualizarListaConectados(String mensaje) {
+   private void actualizarListaConectados(String mensaje) {
+        Set<String> rutsMedicos = obtenerRutsMedicos();
         String[] partes = mensaje.split(":")[1].split(",");
         modeloListaMedicos.clear();
         for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario) && rutsMedicos.contains(medico)) {
                 modeloListaMedicos.addElement(medico);
             }
         }
     }
+
+    private Set<String> obtenerRutsMedicos() {
+            Set<String> rutsMedicos = new HashSet<>();
+            String filePath = "./src/main/java/Users/Medicos.txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(", ");
+                    String rut = parts[1].split(": ")[1];
+                    System.out.println("Rut: " + rut);
+                    rutsMedicos.add(rut);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return rutsMedicos;
+        }
 
     public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario, String rolUsuario) {
         if (chatsAbiertos.containsKey(medico)) {

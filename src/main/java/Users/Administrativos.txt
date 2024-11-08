@@ -1,5 +1,5 @@
-Nombre: zxc, RUT: zxc, Correo: zxc, Clave: zxc, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
-Nombre: pab, RUT: pab, Correo: pab, Clave: pab, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: zxc, RUT: zxc, Correo: zxc, Clave: 123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
+Nombre: pab, RUT: pab, Correo: pab, Clave: 123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
 Nombre: exa, RUT: exa, Correo: exa, Clave: exa, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: true
 Nombre: aux, RUT: aux, Correo: aux, Clave: aux, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: true
 Nombre: adm, RUT: adm, Correo: adm, Clave: adm, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: true
