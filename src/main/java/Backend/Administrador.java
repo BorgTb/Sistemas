@@ -56,7 +56,7 @@ public class Administrador {
     }
 
     private boolean autenticarDesdeArchivo(String fileName, String rut, String clave) {
-        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -84,7 +84,7 @@ public class Administrador {
     }
 
     private Document retornarDesdeArchivo(String fileName, String rut) {
-        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
