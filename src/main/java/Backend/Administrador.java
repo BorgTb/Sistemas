@@ -1,74 +1,107 @@
 package Backend;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import org.bson.Document;
 
-import com.mongodb.client.MongoCollection;
-
 public class Administrador {
-    Database data = Database.getInstance();
-    
     public Administrador() {
-        System.out.println("Administrador creado");
     }
 
+    public void guardarClienteEnArchivo(String nombre, String rut, String correo, String clave, String tipoUsuario, String area) {
+        String fileName = tipoUsuario.equalsIgnoreCase("Medico") ? "Medicos.txt" : "Administrativos.txt";
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        File directory = new File("./src/main/java/Users");
+        if (tipoUsuario=="Medico"){
+            area=null;
+        }
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                System.out.println("Directory created: " + directory.getAbsolutePath());
+            } else {
+                System.out.println("Failed to create directory: " + directory.getAbsolutePath());
+            }
+        }
 
-    /*
-    FALTA VALIDAR:
-    - SI UN CLIENTE YA EXISTE, O SI SE INGRESA UN CLIENTE CON EL MISMO RUT, ETC..
-    - 
-    */
-    @SuppressWarnings("unchecked")
-    public void crearCliente() {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document document = new Document("_id","1")
-        .append("nombre","Juan").
-        append("rut","211992204").
-        append("correo","elpepe@gmail.com").
-        append("clave", "1234");
-
-        collection.insertOne(document);
-    }
-
-    public void leerCliente() {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document document = (Document) collection.find().first();
-        System.out.println(document.toJson());
-    } 
-
-    public void eliminarCliente(String rut) {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document query = new Document("rut", rut);
-        collection.deleteOne(query);
-        System.out.println("Cliente con RUT " + rut + " eliminado.");
-    }
-
-    public Document retornarCliente(String rut) {
-        @SuppressWarnings("rawtypes")
-        MongoCollection collection = data.getColeccion("Clientes");
-        Document query = new Document("rut", rut);
-        Document cliente = (Document) collection.find(query).first();
-        if (cliente != null) {
-            return cliente;
-        } else {
-            System.out.println("Cliente con RUT " + rut + " no encontrado.");
-            return null;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            writer.write(String.format("Nombre: %s, RUT: %s, Correo: %s, Clave: %s, TipoUsuario: %s, Area: %s", nombre, rut, correo, clave, tipoUsuario, area));
+            writer.newLine();
+            System.out.println("Cliente guardado en archivo: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    public boolean autenticarMedico(String rut, String clave) {
+        System.out.println("medico");
+        return autenticarDesdeArchivo("Medicos.txt", rut, clave);
+    }
 
+    public boolean autenticarAdministrativo(String rut, String clave) {
+        System.out.println("Administrativos");
+        return autenticarDesdeArchivo("Administrativos.txt", rut, clave);
+    }
 
-    //opcional un metodo para actualizar al cliente
+    private boolean autenticarDesdeArchivo(String fileName, String rut, String clave) {
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length == 6) {
+                    String fileRut = parts[1].split(": ")[1];
+                    String fileClave = parts[3].split(": ")[1];
+                    if (fileRut.equals(rut) && fileClave.equals(clave)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        return false;
+    }
 
+    public Document retornarMedico(String rut) {
+        return retornarDesdeArchivo("Medicos.txt", rut);
+    }
 
+    public Document retornarAdministrativo(String rut) {
+        return retornarDesdeArchivo("Administrativos.txt", rut);
+    }
 
-    public static void main(String[] args) {
-        Administrador admin = new Administrador();
-        //admin.crearCliente();
-        //admin.leerCliente();
-        admin.leerCliente();
+    private Document retornarDesdeArchivo(String fileName, String rut) {
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length == 6) {
+                    String fileRut = parts[1].split(": ")[1];
+                    if (fileRut.equals(rut)) {
+                        Document doc = new Document();
+                        doc.append("nombre", parts[0].split(": ")[1]);
+                        doc.append("rut", fileRut);
+                        doc.append("correo", parts[2].split(": ")[1]);
+                        doc.append("clave", parts[3].split(": ")[1]);
+                        doc.append("tipoUsuario", parts[4].split(": ")[1]);
+                        doc.append("area", parts[5].split(": ")[1].equals("null") ? null : parts[5].split(": ")[1]);
+                        System.out.println(doc);
+                        return doc;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
