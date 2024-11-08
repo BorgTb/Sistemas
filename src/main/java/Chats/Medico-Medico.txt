@@ -1,3 +1,11 @@
 [19:59:31] 1 (Médico): fasdfsdf
 [19:59:32] 1 (Médico): asdfasdf
 [19:59:33] 1 (Médico): asdfasdf
+
+[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
+
+[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
+
+[MENSAJE URGENTE]: hola
+
+[MENSAJE URGENTE]: caquita

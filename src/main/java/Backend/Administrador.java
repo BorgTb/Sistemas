@@ -2,15 +2,26 @@ package Backend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import org.bson.Document;
 
+import Frontend.Controladores.gestorArchivos;
+
 public class Administrador {
+    private gestorArchivos gestorArchivos = new gestorArchivos();
+    private DataOutputStream salida;
+
     public Administrador() {
     }
 
@@ -18,15 +29,13 @@ public class Administrador {
         String fileName = tipoUsuario.equalsIgnoreCase("Medico") ? "Medicos.txt" : "Administrativos.txt";
         String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         File directory = new File("./src/main/java/Users");
-        if (tipoUsuario=="Medico"){
-            area=null;
+        if (tipoUsuario.equals("Medico")){
+            area = null;  // Aseguramos que 'area' sea null para médicos
         }
-        if (!directory.exists()) {
-            if (directory.mkdirs()) {
-                System.out.println("Directory created: " + directory.getAbsolutePath());
-            } else {
-                System.out.println("Failed to create directory: " + directory.getAbsolutePath());
-            }
+
+        if (!directory.exists() && !directory.mkdirs()) {
+            System.out.println("Error al crear el directorio: " + directory.getAbsolutePath());
+            return;
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
@@ -39,12 +48,10 @@ public class Administrador {
     }
 
     public boolean autenticarMedico(String rut, String clave) {
-        System.out.println("medico");
         return autenticarDesdeArchivo("Medicos.txt", rut, clave);
     }
 
     public boolean autenticarAdministrativo(String rut, String clave) {
-        System.out.println("Administrativos");
         return autenticarDesdeArchivo("Administrativos.txt", rut, clave);
     }
 
@@ -65,7 +72,6 @@ public class Administrador {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
         return false;
     }
 
@@ -93,7 +99,6 @@ public class Administrador {
                         doc.append("clave", parts[3].split(": ")[1]);
                         doc.append("tipoUsuario", parts[4].split(": ")[1]);
                         doc.append("area", parts[5].split(": ")[1].equals("null") ? null : parts[5].split(": ")[1]);
-                        System.out.println(doc);
                         return doc;
                     }
                 }
@@ -104,4 +109,50 @@ public class Administrador {
         return null;
     }
 
+    public void enviarMensajeUrgenteAChats(String mensajeUrgente) throws IOException {
+        salida.writeUTF("mensajeUrgente#"+mensajeUrgente);
+        File directorioChats = new File("./src/main/java/Chats");
+        if (!directorioChats.exists()) {
+            System.out.println("El directorio de chats no existe.");
+            return;
+        }
+
+        File[] archivosChats = directorioChats.listFiles((dir, name) -> name.endsWith(".txt"));
+        if (archivosChats == null || archivosChats.length == 0) {
+            System.out.println("No se encontraron archivos de chat.");
+            return;
+        }
+
+        for (File archivoChat : archivosChats) {
+            try (FileWriter escritor = new FileWriter(archivoChat, true)) {
+                escritor.write("\n[MENSAJE URGENTE]: " + mensajeUrgente + "\n");
+            } catch (IOException e) {
+                System.out.println("Error al escribir en el archivo: " + archivoChat.getName());
+                e.printStackTrace();
+            }
+        }
+    }
+    private void enviarMensajeATodasLasPestanas(String mensaje, String mensajeFormateado) {
+        try {
+            // Envía el mensaje a cada pestaña y lo guarda en los archivos correspondientes
+            salida.writeUTF("medico-medico:" + mensajeFormateado);
+            gestorArchivos.guardarChat("medico-medico", mensajeFormateado);
+    
+            salida.writeUTF("medico-admision:" + mensajeFormateado);
+            gestorArchivos.guardarChat("medico-admision", mensajeFormateado);
+    
+            salida.writeUTF("medico-pabellon:" + mensajeFormateado);
+            gestorArchivos.guardarChat("medico-pabellon", mensajeFormateado);
+    
+            salida.writeUTF("medico-examenes:" + mensajeFormateado);
+            gestorArchivos.guardarChat("medico-examenes", mensajeFormateado);
+    
+            salida.writeUTF("auxiliar:" + mensajeFormateado);
+            gestorArchivos.guardarChat("auxiliar", mensajeFormateado);
+            
+        } catch (IOException e) {
+            System.err.println("Error al enviar el mensaje a todas las pestañas: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

@@ -11,3 +11,11 @@
 [19:31:03] 1 (Médico): q
 [19:31:03] 1 (Médico): q
 [19:31:04] 1 (Médico): q
+
+[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
+
+[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
+
+[MENSAJE URGENTE]: hola
+
+[MENSAJE URGENTE]: caquita
