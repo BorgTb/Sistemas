@@ -3,7 +3,6 @@ package Backend;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.runtime.SwitchBootstraps;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ public class Server {
                 ClienteHandler clienteHandler = new ClienteHandler(socket);
                 clientes.add(clienteHandler);
                 new Thread(clienteHandler).start();
-                // Mueve esta línea dentro del método run del ClienteHandler
-                // enviarListaConectados();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,10 +82,8 @@ public class Server {
                 salida = new DataOutputStream(socket.getOutputStream());
                 this.nombre = entrada.readUTF();
                 enviarListaConectados(); // Enviar lista de conectados cuando un nuevo cliente se conecta
-
                 String mensaje;
                 while ((mensaje = entrada.readUTF()) != null) {
-
                     if (mensaje.startsWith("Privado:")) {
                         String nombreDestinatario = obtenerNombreDestinatario(mensaje);
                         mensaje = parsearMensajePrivado(mensaje, this.nombre);

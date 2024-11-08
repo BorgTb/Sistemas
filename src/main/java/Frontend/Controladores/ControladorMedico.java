@@ -110,33 +110,15 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             }
         }).start();
     }
-   private void actualizarListaConectados(String mensaje) {
-        Set<String> rutsMedicos = obtenerRutsMedicos();
+    private void actualizarListaConectados(String mensaje) {
         String[] partes = mensaje.split(":")[1].split(",");
         modeloListaMedicos.clear();
         for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario) && rutsMedicos.contains(medico)) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
                 modeloListaMedicos.addElement(medico);
             }
         }
     }
-
-    private Set<String> obtenerRutsMedicos() {
-            Set<String> rutsMedicos = new HashSet<>();
-            String filePath = "./src/main/java/Users/Medicos.txt";
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(", ");
-                    String rut = parts[1].split(": ")[1];
-                    System.out.println("Rut: " + rut);
-                    rutsMedicos.add(rut);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return rutsMedicos;
-        }
 
 
     private String convertirMensajePrivado(String mensaje) {

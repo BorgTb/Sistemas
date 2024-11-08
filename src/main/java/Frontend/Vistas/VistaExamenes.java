@@ -60,6 +60,7 @@ public class VistaExamenes extends JFrame {
     
     private gestorArchivos gestorArchivos = new gestorArchivos();
 
+    @SuppressWarnings("unchecked")
     public VistaExamenes(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
         this.rolUsuario = rolUsuario;
@@ -376,7 +377,6 @@ public class VistaExamenes extends JFrame {
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        //System.out.println("Mensaje recibido: " + mensaje);
                         if (mensaje.startsWith("Conectados:")) {
                             actualizarListaConectados(mensaje);
                         }else if (mensaje.contains("PrivateMessage")) {
@@ -389,24 +389,26 @@ public class VistaExamenes extends JFrame {
                             String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
                             mostrarMensajeUrgente(mensajeUrgente);
                         }else {
+                            
                             String[] partes = mensaje.split(":", 2);
+                            System.out.println("Partes: " + partes[0] + " " + partes[1]);
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
                                 switch (pestaña) {
-                                    case "Medico-Admision":
+                                    case "Medico-Examenes":
                                         mostrarMensajeMedico(contenidoMensaje);
                                         break;
                                     case "Auxiliar":
                                         mostrarMensajeAuxiliar(contenidoMensaje);
                                         break;
-                                    case "Admision-Admision":
+                                    case "Examenes-Admision":
                                         mostrarMensajeAdmision(contenidoMensaje);
                                         break;
-                                    case "Admision-Pabellon":
+                                    case "Examenes-Pabellon":
                                         mostrarMensajePabellon(contenidoMensaje);
                                         break;
-                                    case "Examenes-Admision":
+                                    case "Examenes-Examenes":
                                         mostrarMensajeExamenes(contenidoMensaje);
                                         break;
                                 }

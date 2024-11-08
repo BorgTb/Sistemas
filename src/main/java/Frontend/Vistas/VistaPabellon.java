@@ -406,19 +406,19 @@ public class VistaPabellon extends JFrame {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
                                 switch (pestaña) {
-                                    case "Medico-Admision":
+                                    case "Medico-Pabellon":
                                         mostrarMensajeMedico(contenidoMensaje);
                                         break;
                                     case "Auxiliar":
                                         mostrarMensajeAuxiliar(contenidoMensaje);
                                         break;
-                                    case "Admision-Admision":
+                                    case "Admision-Pabellon":
                                         mostrarMensajeAdmision(contenidoMensaje);
                                         break;
-                                    case "Admision-Pabellon":
+                                    case "Pabellon-Pabellon":
                                         mostrarMensajePabellon(contenidoMensaje);
                                         break;
-                                    case "Examenes-Admision":
+                                    case "Examenes-Pabellon":
                                         mostrarMensajeExamenes(contenidoMensaje);
                                         break;
                                 }

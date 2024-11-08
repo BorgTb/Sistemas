@@ -1,0 +1,4 @@
+[04:43:44] 1 (Médico): hola medico 2 para chat general de medicos
+[04:46:39] 1 (Médico): canal de medicos
+
+[MENSAJE URGENTE]: TODOS A URGENCIAS

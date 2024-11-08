@@ -1,5 +1,6 @@
-Nombre: zxc, RUT: zxc, Correo: zxc, Clave: 123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
-Nombre: pab, RUT: pab, Correo: pab, Clave: 123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
-Nombre: exa, RUT: exa, Correo: exa, Clave: exa, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: true
-Nombre: aux, RUT: aux, Correo: aux, Clave: aux, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: true
-Nombre: adm, RUT: adm, Correo: adm, Clave: adm, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: true
+Nombre: Alberto Fernandez, RUT: 87654321-0, Correo: alberto.fernandez@gmail.com, Clave: 5678, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
+Nombre: Beatriz Gonzalez, RUT: 12349876-5, Correo: beatriz.gonzalez@hotmail.com, Clave: 6789, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
+Nombre: Camila Ramirez, RUT: 23456789-1, Correo: camila.ramirez@gmail.com, Clave: 7890, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: false
+Nombre: Daniel Torres, RUT: 34567890-2, Correo: daniel.torres@hotmail.com, Clave: 8901, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: false
+Nombre: Elena Martinez, RUT: 45678901-3, Correo: elena.martinez@gmail.com, Clave: 9012, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: false
+Nombre: Francisco Lopez, RUT: 56789012-4, Correo: francisco.lopez@gmail.com, Clave: 0123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true

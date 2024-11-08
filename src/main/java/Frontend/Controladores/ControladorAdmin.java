@@ -90,7 +90,7 @@ public class ControladorAdmin {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String fileRut = parts[1].split(": ")[1];
                     if (fileRut.equals(rutUsuario)) {
                         parts[3] = "Clave: " + nuevaClave;
