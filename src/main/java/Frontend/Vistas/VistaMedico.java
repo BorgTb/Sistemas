@@ -291,6 +291,15 @@ public class VistaMedico extends JFrame {
 
     public void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
+    } 
+
+    public void mostrarMensajeUrgente(String mensaje){
+        mostrarMensajeAdmision(mensaje);
+        mostrarMensajePabellon(mensaje);
+        mostrarMensajeExamenes(mensaje);
+        mostrarMensajeMedico(mensaje);
+        mostrarMensajeAuxiliar(mensaje);
+        
     }
 
 

@@ -109,8 +109,10 @@ public class Administrador {
         return null;
     }
 
-    public void enviarMensajeUrgenteAChats(String mensajeUrgente) throws IOException {
-        salida.writeUTF("mensajeUrgente#"+mensajeUrgente);
+    public void enviarMensajeUrgenteAChats(String mensajeUrgente, DataOutputStream salida) throws IOException {
+
+        salida.writeUTF("URGENTE;"+mensajeUrgente);
+
         File directorioChats = new File("./src/main/java/Chats");
         if (!directorioChats.exists()) {
             System.out.println("El directorio de chats no existe.");
@@ -125,6 +127,7 @@ public class Administrador {
 
         for (File archivoChat : archivosChats) {
             try (FileWriter escritor = new FileWriter(archivoChat, true)) {
+                
                 escritor.write("\n[MENSAJE URGENTE]: " + mensajeUrgente + "\n");
             } catch (IOException e) {
                 System.out.println("Error al escribir en el archivo: " + archivoChat.getName());
@@ -132,27 +135,5 @@ public class Administrador {
             }
         }
     }
-    private void enviarMensajeATodasLasPestanas(String mensaje, String mensajeFormateado) {
-        try {
-            // Envía el mensaje a cada pestaña y lo guarda en los archivos correspondientes
-            salida.writeUTF("medico-medico:" + mensajeFormateado);
-            gestorArchivos.guardarChat("medico-medico", mensajeFormateado);
-    
-            salida.writeUTF("medico-admision:" + mensajeFormateado);
-            gestorArchivos.guardarChat("medico-admision", mensajeFormateado);
-    
-            salida.writeUTF("medico-pabellon:" + mensajeFormateado);
-            gestorArchivos.guardarChat("medico-pabellon", mensajeFormateado);
-    
-            salida.writeUTF("medico-examenes:" + mensajeFormateado);
-            gestorArchivos.guardarChat("medico-examenes", mensajeFormateado);
-    
-            salida.writeUTF("auxiliar:" + mensajeFormateado);
-            gestorArchivos.guardarChat("auxiliar", mensajeFormateado);
-            
-        } catch (IOException e) {
-            System.err.println("Error al enviar el mensaje a todas las pestañas: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+
 }

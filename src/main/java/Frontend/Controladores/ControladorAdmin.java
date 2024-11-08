@@ -32,6 +32,7 @@ public class ControladorAdmin {
             socket = new Socket("localhost", 12345);
             salida = new DataOutputStream(socket.getOutputStream());
             entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF("Administrador");
             System.out.println("Conectado al servidor");
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,7 +71,7 @@ public class ControladorAdmin {
             }
 
             try {
-                administrador.enviarMensajeUrgenteAChats(mensajeUrgente);
+                administrador.enviarMensajeUrgenteAChats(mensajeUrgente,salida);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -85,4 +86,6 @@ public class ControladorAdmin {
             System.out.println("Ver Estadísticas presionado");
         }
     }
+
+
 }

@@ -88,8 +88,13 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                             String remitente = mensaje.split(" ")[1].split("\\[")[0];
                             String contenido = convertirMensajePrivado(mensaje);
                             vistaMedico.mostrarMensajePrivado(remitente, contenido);
-                        } else {
+                        } else if (mensaje.contains("URGENTE")) {
+                            String[] partes = mensaje.split(";");
+                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
+                            vistaMedico.mostrarMensajeUrgente(mensajeUrgente);
+                        }else {
                             String[] partes = mensaje.split(":", 2);
+                            
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];

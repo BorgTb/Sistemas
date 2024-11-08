@@ -8,4 +8,3 @@ Nombre: med7, RUT: 7, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
 Nombre: med8, RUT: 8, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
 Nombre: med9, RUT: 9, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
 Nombre: med10, RUT: 10, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: 1, RUT: 1, Correo: 1, Clave: 1, TipoUsuario: Medico, Area: null
