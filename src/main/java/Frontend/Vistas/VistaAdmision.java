@@ -22,8 +22,6 @@ import Frontend.Controladores.gestorArchivos;
 
 public class VistaAdmision extends JFrame {
     private JTextArea areaChatMedico;
-    private JTextField campoMensajeMedico;
-    private JButton botonEnviarMensajeMedico;
     private JTextArea areaChatAuxiliar;
     private JTextArea areaChatAdmision;
     private JTextArea areaChatPabellon;
@@ -56,6 +54,8 @@ public class VistaAdmision extends JFrame {
         areaChatMedico = new JTextArea();
         areaChatMedico.setEditable(false);
         panelMedico.add(new JScrollPane(areaChatMedico), BorderLayout.CENTER);
+        JButton botonLimpiarChatMedico = new JButton("Limpiar");
+        panelMedico.add(botonLimpiarChatMedico, BorderLayout.NORTH);
         tabbedPane.addTab("Chat Médico", panelMedico);
 
 
@@ -65,11 +65,13 @@ public class VistaAdmision extends JFrame {
          areaChatAuxiliar.setEditable(false);
          campoMensajeAuxiliar = new JTextField();
          botonEnviarMensajeAuxiliar = new JButton("Enviar");
+         JButton botonLimpiarChatAuxiliar = new JButton("Limpiar");
          panelAuxiliar.add(new JScrollPane(areaChatAuxiliar), BorderLayout.CENTER);
          JPanel panelInputAuxiliar = new JPanel(new BorderLayout());
          panelInputAuxiliar.add(campoMensajeAuxiliar, BorderLayout.CENTER);
          panelInputAuxiliar.add(botonEnviarMensajeAuxiliar, BorderLayout.EAST);
          panelAuxiliar.add(panelInputAuxiliar, BorderLayout.SOUTH);
+         panelAuxiliar.add(botonLimpiarChatAuxiliar, BorderLayout.NORTH);
          tabbedPane.addTab("Chat Auxiliar", panelAuxiliar);
  
          // Pestaña de chat con admisión
@@ -78,11 +80,13 @@ public class VistaAdmision extends JFrame {
          areaChatAdmision.setEditable(false);
          campoMensajeAdmision = new JTextField();
          botonEnviarMensajeAdmision = new JButton("Enviar");
+         JButton botonLimpiarChatAdmision = new JButton("Limpiar");
          panelAdmision.add(new JScrollPane(areaChatAdmision), BorderLayout.CENTER);
          JPanel panelInputAdmision = new JPanel(new BorderLayout());
          panelInputAdmision.add(campoMensajeAdmision, BorderLayout.CENTER);
          panelInputAdmision.add(botonEnviarMensajeAdmision, BorderLayout.EAST);
          panelAdmision.add(panelInputAdmision, BorderLayout.SOUTH);
+         panelAdmision.add(botonLimpiarChatAdmision, BorderLayout.NORTH);
          tabbedPane.addTab("Chat Admisión", panelAdmision);
  
          // Pestaña de chat con pabellón
@@ -91,11 +95,13 @@ public class VistaAdmision extends JFrame {
          areaChatPabellon.setEditable(false);
          campoMensajePabellon = new JTextField();
          botonEnviarMensajePabellon = new JButton("Enviar");
+         JButton botonLimpiarChatPabellon = new JButton("Limpiar");
          panelPabellon.add(new JScrollPane(areaChatPabellon), BorderLayout.CENTER);
          JPanel panelInputPabellon = new JPanel(new BorderLayout());
          panelInputPabellon.add(campoMensajePabellon, BorderLayout.CENTER);
          panelInputPabellon.add(botonEnviarMensajePabellon, BorderLayout.EAST);
          panelPabellon.add(panelInputPabellon, BorderLayout.SOUTH);
+         panelPabellon.add(botonLimpiarChatPabellon, BorderLayout.NORTH);
          tabbedPane.addTab("Chat Pabellón", panelPabellon);
  
          // Pestaña de chat con exámenes
@@ -104,12 +110,16 @@ public class VistaAdmision extends JFrame {
          areaChatExamenes.setEditable(false);
          campoMensajeExamenes = new JTextField();
          botonEnviarMensajeExamenes = new JButton("Enviar");
+         JButton botonLimpiarChatExamenes = new JButton("Limpiar");
          panelExamenes.add(new JScrollPane(areaChatExamenes), BorderLayout.CENTER);
          JPanel panelInputExamenes = new JPanel(new BorderLayout());
          panelInputExamenes.add(campoMensajeExamenes, BorderLayout.CENTER);
          panelInputExamenes.add(botonEnviarMensajeExamenes, BorderLayout.EAST);
          panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
+         panelExamenes.add(botonLimpiarChatExamenes, BorderLayout.NORTH);
          tabbedPane.addTab("Chat Exámenes", panelExamenes);
+
+
          gestorArchivos.leerChats("admision-admision").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
         gestorArchivos.leerChats("medico-admision").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
         gestorArchivos.leerChats("admision-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
@@ -141,6 +151,39 @@ public class VistaAdmision extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensajeExamenes();
+            }
+        });
+        botonLimpiarChatMedico.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarChatMedico();
+            }
+        });
+        botonLimpiarChatAuxiliar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarChatAuxiliar();
+            }
+        });
+        
+        botonLimpiarChatAdmision.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarChatAdmision();
+            }
+        });
+        
+        botonLimpiarChatPabellon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarChatPabellon();
+            }
+        });
+        
+        botonLimpiarChatExamenes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarChatExamenes();
             }
         });
     }
@@ -248,5 +291,24 @@ public class VistaAdmision extends JFrame {
 
     public void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
+    }
+    private void limpiarChatMedico() {
+        areaChatMedico.setText("");
+    }
+    
+    private void limpiarChatAuxiliar() {
+        areaChatAuxiliar.setText("");
+    }
+    
+    private void limpiarChatAdmision() {
+        areaChatAdmision.setText("");
+    }
+    
+    private void limpiarChatPabellon() {
+        areaChatPabellon.setText("");
+    }
+    
+    private void limpiarChatExamenes() {
+        areaChatExamenes.setText("");
     }
 }
