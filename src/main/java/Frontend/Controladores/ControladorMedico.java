@@ -59,7 +59,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     }
 
     private void cargarMedicos() {
-        try (BufferedReader br = new BufferedReader(new FileReader("./src/main/java/Users/Medicos.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("Sistemas/src/main/java/Users/Medicos.txt"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(", ");

@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class gestorArchivos {
-    private String fileDirectory = "./src/main/java/Chats";
+    private String fileDirectory = "Sistemas/src/main/java/Chats";
 
     public void guardarChat(String grupo, String mensaje) {
         String fileName = grupo + ".txt";
-        String filePath = Paths.get("./src/main/java/Chats", fileName).toString();
-        File directory = new File("./src/main/java/Chats");
+        String filePath = Paths.get("Sistemas/src/main/java/Chats", fileName).toString();
+        File directory = new File("Sistemas/src/main/java/Chats");
 
         if (!directory.exists()) {
             if (directory.mkdirs()) {
@@ -38,7 +38,7 @@ public class gestorArchivos {
     public List<String> leerChats(String grupo) {
         List<String> chats = new ArrayList<>();
         String fileName = grupo + ".txt";
-        String filePath = Paths.get("./src/main/java/Chats", fileName).toString();
+        String filePath = Paths.get("Sistemas/src/main/java/Chats", fileName).toString();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;

@@ -1,16 +1,20 @@
 package Frontend.Vistas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,10 +29,16 @@ public class VistaAdmin extends JFrame {
     private JComboBox<String> area;
     private JTextArea areaTextoUsuarios, areaTextoEstadisticas;
     private JButton botonAgregarUsuario, botonEnviarUrgente, botonVerEstadisticas;
+    private JList<String> listaUsuarios;
+    private DefaultListModel<String> modeloListaUsuarios;
+    private JButton botonReiniciarClave;
+    private ControladorAdmin controlador; // Añadir campo ControladorAdmin
+    private static VistaAdmin instance;
+    public VistaAdmin(ControladorAdmin controlador) {
+        this.controlador = controlador; // Inicializar el campo ControladorAdmin
 
-    public VistaAdmin() {
         setTitle("Administrador de Chat");
-        setSize(600, 500);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -107,10 +117,36 @@ public class VistaAdmin extends JFrame {
         areaTextoUsuarios.setEditable(false);
         areaTextoEstadisticas.setEditable(false);
 
+        // Initialize and add the user list
+        modeloListaUsuarios = new DefaultListModel<>();
+        listaUsuarios = new JList<>(modeloListaUsuarios);
+        JScrollPane scrollListaUsuarios = new JScrollPane(listaUsuarios);
+        scrollListaUsuarios.setPreferredSize(new Dimension(780, 150));
+
+        // Panel to hold both text areas and user list
+        JPanel panelCentro = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcCentro = new GridBagConstraints();
+        gbcCentro.insets = new Insets(5, 5, 5, 5);
+        gbcCentro.fill = GridBagConstraints.BOTH;
+        gbcCentro.gridx = 0;
+        gbcCentro.gridy = 0;
+        gbcCentro.weightx = 1.0;
+        gbcCentro.weighty = 0.5;
+        panelCentro.add(scrollUsuarios, gbcCentro);
+        botonReiniciarClave = new JButton("Reiniciar Clave");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        panelCentro.add(botonReiniciarClave, gbc);
+        gbcCentro.gridy = 1;
+        panelCentro.add(scrollEstadisticas, gbcCentro);
+
+        gbcCentro.gridy = 2;
+        gbcCentro.weighty = 0.5;
+        panelCentro.add(scrollListaUsuarios, gbcCentro);
+
         // Add components to the frame
         add(panelPrincipal, BorderLayout.NORTH);
-        add(scrollUsuarios, BorderLayout.CENTER);
-        add(scrollEstadisticas, BorderLayout.SOUTH);
+        add(panelCentro, BorderLayout.CENTER);
 
         // Add ActionListener to comboTipoUsuario
         comboTipoUsuario.addActionListener(new ActionListener() {
@@ -124,7 +160,49 @@ public class VistaAdmin extends JFrame {
             }
         });
 
+        botonReiniciarClave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUser = listaUsuarios.getSelectedValue();
+                if (selectedUser != null) {
+                    String[] userParts = selectedUser.split(" - ");
+                    if (userParts.length >= 2) {
+                        String rutUsuario = userParts[1];
+                        System.out.println("rut: " + rutUsuario);
+                        String nuevaClave = "nuevaClave123"; // Generar una nueva clave aquí
+        
+                        boolean actualizado = false;
+                        if (selectedUser.contains("Medico")) {
+                            actualizado = controlador.reiniciarClaveUsuario("Medicos.txt", rutUsuario, nuevaClave);
+                        } else if (selectedUser.contains("Administrativo")) {
+                            actualizado = controlador.reiniciarClaveUsuario("Administrativos.txt", rutUsuario, nuevaClave);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Tipo de usuario desconocido.");
+                            return;
+                        }
+        
+                        if (actualizado) {
+                            JOptionPane.showMessageDialog(null, "Clave reiniciada correctamente.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error al reiniciar la clave.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Formato de usuario seleccionado incorrecto.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Seleccione un usuario.");
+                }
+            }
+        });
+        
         setVisible(true);
+
+        setVisible(true);
+    }
+
+    public void setModeloListaUsuarios(DefaultListModel<String> modeloListaUsuarios) {
+        this.modeloListaUsuarios = modeloListaUsuarios;
+        listaUsuarios.setModel(modeloListaUsuarios);
     }
 
     public void addAgregarUsuarioListener(ActionListener listener) {
@@ -158,9 +236,11 @@ public class VistaAdmin extends JFrame {
     public String getTipoUsuario() {
         return (String) comboTipoUsuario.getSelectedItem();
     }
+
     public String getArea() {
         return (String) area.getSelectedItem();
     }
+
     public void limpiarCampos() {
         campoNombre.setText("");
         campoRut.setText("");
@@ -174,8 +254,20 @@ public class VistaAdmin extends JFrame {
     public JButton getBotonAgregarUsuario() {
         return botonAgregarUsuario;
     }
+    public static VistaAdmin getInstance(ControladorAdmin controlador) {
+        if (instance == null) {
+            instance = new VistaAdmin(controlador);
+        }
+        return instance;
+    }
+
+    public void iniciarVista() {
+        setVisible(true);
+    }
 
     public static void main(String[] args) {
-        new ControladorAdmin();
+        ControladorAdmin controlador = new ControladorAdmin();
+        VistaAdmin vistaAdmin = VistaAdmin.getInstance(controlador);
+        vistaAdmin.iniciarVista();
     }
 }
