@@ -9,10 +9,13 @@ import java.net.Socket;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.Paths;
 
 import javax.swing.DefaultListModel;
@@ -23,17 +26,17 @@ import Frontend.Vistas.VistaAdmin;
 public class ControladorAdmin {
     private VistaAdmin vista;
     private Administrador administrador;
+    private DefaultListModel<String> modeloListaUsuarios;
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
-    private DefaultListModel<String> modeloListaUsuarios;
 
     public ControladorAdmin() {
         this.vista = VistaAdmin.getInstance(this); // Pass 'this' to the VistaAdmin constructor
         administrador = new Administrador();
-        conectarAlServidor();
         modeloListaUsuarios = new DefaultListModel<>(); // Inicializar modeloListaUsuarios
         vista.setModeloListaUsuarios(modeloListaUsuarios); // Establecer el modelo en la vista
+        conectarAlServidor();
         vista.addAgregarUsuarioListener(new AgregarUsuarioListener());
         vista.addEnviarUrgenteListener(new EnviarUrgenteListener());
         vista.addVerEstadisticasListener(new VerEstadisticasListener());
@@ -58,7 +61,7 @@ public class ControladorAdmin {
     }
 
     private void cargarUsuariosDesdeArchivo(String fileName) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String linea;
             while ((linea = br.readLine()) != null) {

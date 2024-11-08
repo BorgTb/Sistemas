@@ -8,11 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.bson.Document;
 
@@ -29,8 +24,8 @@ public class Administrador {
         String fileName = tipoUsuario.equalsIgnoreCase("Medico") ? "Medicos.txt" : "Administrativos.txt";
         String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         File directory = new File("./src/main/java/Users");
-        if (tipoUsuario.equals("Medico")){
-            area = null;  // Aseguramos que 'area' sea null para médicos
+        if (tipoUsuario=="Medico"){
+            area=null;
         }
 
         if (!directory.exists() && !directory.mkdirs()) {
