@@ -2,15 +2,26 @@ package Backend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import org.bson.Document;
 
+import Frontend.Controladores.gestorArchivos;
+
 public class Administrador {
+    private gestorArchivos gestorArchivos = new gestorArchivos();
+    private DataOutputStream salida;
+
     public Administrador() {
     }
 
@@ -21,12 +32,10 @@ public class Administrador {
         if (tipoUsuario=="Medico"){
             area=null;
         }
-        if (!directory.exists()) {
-            if (directory.mkdirs()) {
-                System.out.println("Directory created: " + directory.getAbsolutePath());
-            } else {
-                System.out.println("Failed to create directory: " + directory.getAbsolutePath());
-            }
+
+        if (!directory.exists() && !directory.mkdirs()) {
+            System.out.println("Error al crear el directorio: " + directory.getAbsolutePath());
+            return;
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
@@ -39,12 +48,10 @@ public class Administrador {
     }
 
     public boolean autenticarMedico(String rut, String clave) {
-        System.out.println("medico");
         return autenticarDesdeArchivo("Medicos.txt", rut, clave);
     }
 
     public boolean autenticarAdministrativo(String rut, String clave) {
-        System.out.println("Administrativos");
         return autenticarDesdeArchivo("Administrativos.txt", rut, clave);
     }
 
@@ -65,7 +72,6 @@ public class Administrador {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
         return false;
     }
 
@@ -93,7 +99,6 @@ public class Administrador {
                         doc.append("clave", parts[3].split(": ")[1]);
                         doc.append("tipoUsuario", parts[4].split(": ")[1]);
                         doc.append("area", parts[5].split(": ")[1].equals("null") ? null : parts[5].split(": ")[1]);
-                        System.out.println(doc);
                         return doc;
                     }
                 }
@@ -102,6 +107,33 @@ public class Administrador {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void enviarMensajeUrgenteAChats(String mensajeUrgente, DataOutputStream salida) throws IOException {
+
+        salida.writeUTF("URGENTE;"+mensajeUrgente);
+
+        File directorioChats = new File("./src/main/java/Chats");
+        if (!directorioChats.exists()) {
+            System.out.println("El directorio de chats no existe.");
+            return;
+        }
+
+        File[] archivosChats = directorioChats.listFiles((dir, name) -> name.endsWith(".txt"));
+        if (archivosChats == null || archivosChats.length == 0) {
+            System.out.println("No se encontraron archivos de chat.");
+            return;
+        }
+
+        for (File archivoChat : archivosChats) {
+            try (FileWriter escritor = new FileWriter(archivoChat, true)) {
+                
+                escritor.write("\n[MENSAJE URGENTE]: " + mensajeUrgente + "\n");
+            } catch (IOException e) {
+                System.out.println("Error al escribir en el archivo: " + archivoChat.getName());
+                e.printStackTrace();
+            }
+        }
     }
 
 }

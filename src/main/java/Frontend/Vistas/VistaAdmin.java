@@ -24,7 +24,7 @@ import Frontend.Controladores.ControladorAdmin;
 
 public class VistaAdmin extends JFrame {
     private JPanel panelPrincipal;
-    private JTextField campoNombre, campoRut, campoCorreo, campoClave;
+    private JTextField campoNombre, campoRut, campoCorreo, campoClave, campoMensajeUrgente;
     private JComboBox<String> comboTipoUsuario;
     private JComboBox<String> area;
     private JTextArea areaTextoUsuarios, areaTextoEstadisticas;
@@ -101,10 +101,16 @@ public class VistaAdmin extends JFrame {
         panelPrincipal.add(botonAgregarUsuario, gbc);
 
         gbc.gridy = 7;
+        panelPrincipal.add(new JLabel("Mensaje Urgente:"), gbc);
+        gbc.gridx = 1;
+        campoMensajeUrgente = new JTextField(30);
+        panelPrincipal.add(campoMensajeUrgente, gbc);
+
+        gbc.gridy = 8;
         botonEnviarUrgente = new JButton("Enviar Mensaje Urgente");
         panelPrincipal.add(botonEnviarUrgente, gbc);
 
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         botonVerEstadisticas = new JButton("Ver Estadísticas");
         panelPrincipal.add(botonVerEstadisticas, gbc);
 
@@ -241,6 +247,10 @@ public class VistaAdmin extends JFrame {
         return (String) area.getSelectedItem();
     }
 
+    public String getMensajeUrgente() {
+        return campoMensajeUrgente.getText();
+    }
+
     public void limpiarCampos() {
         campoNombre.setText("");
         campoRut.setText("");
@@ -249,6 +259,7 @@ public class VistaAdmin extends JFrame {
         comboTipoUsuario.setSelectedIndex(0);
         area.setSelectedIndex(0);
         area.setEnabled(false);
+        campoMensajeUrgente.setText(""); 
     }
 
     public JButton getBotonAgregarUsuario() {

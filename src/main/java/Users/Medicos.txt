@@ -1,4 +1,10 @@
-Nombre: asd, RUT: asd, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med, RUT: med, Correo: med, Clave: med, TipoUsuario: Medico, Area: null
-Nombre: 1, RUT: 1, Correo: 1, Clave: 1, TipoUsuario: Medico, Area: null
-Nombre: rut, RUT: rutificador, Correo: rut, Clave: rut, TipoUsuario: Medico, Area: null
+Nombre: med1, RUT: 1, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med2, RUT: 2, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med3, RUT: 3, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med4, RUT: 4, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med5, RUT: 5, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med6, RUT: 6, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med7, RUT: 7, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med8, RUT: 8, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med9, RUT: 9, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: med10, RUT: 10, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null

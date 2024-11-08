@@ -1,0 +1,5 @@
+[00:31:02] 1 (Médico): asdf
+[00:31:03] 1 (Médico): asdf
+[00:31:29] 1 (Médico): hola
+[02:01:30] 1 (Médico): safdfasf
+[02:01:33] 1 (Médico): asdfas

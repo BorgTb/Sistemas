@@ -1,3 +1,16 @@
+[19:30:05] 1 (Médico): hola
+[19:30:13] med (Médico): que tal amigo
+[19:30:26] 1 (Médico): nada
+[19:30:49] med (Médico): asd
+[19:30:49] med (Médico): asd
+[19:30:50] med (Médico): asd
+[19:30:51] med (Médico): asd
+[19:30:59] 1 (Médico): q
+[19:31:00] 1 (Médico): q
+[19:31:01] 1 (Médico): q
+[19:31:03] 1 (Médico): q
+[19:31:03] 1 (Médico): q
+[19:31:04] 1 (Médico): q
 
 [MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
 
@@ -38,5 +51,3 @@
 [MENSAJE URGENTE]: asdf
 
 [MENSAJE URGENTE]: ESTO ES URGENTE CHAT
-[00:09:09] 1 (MÃ©dico): fasdfadsf
-[00:31:34] 1 (MÃ©dico): aasdfasdf

@@ -1,11 +1,11 @@
-
-[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
-
-[MENSAJE URGENTE]: Este es un mensaje de urgencia del administrador
-
-[MENSAJE URGENTE]: hola
-
-[MENSAJE URGENTE]: caquita
+[21:27:15] 1 (Médico): asd
+[21:27:17] 2 (Médico): fasdf
+[21:27:18] 1 (Médico): asdf
+[21:27:19] 2 (Médico): asdf
+[21:27:20] 1 (Médico): afsdf
+[21:27:21] 2 (Médico): asdf
+[21:27:23] 1 (Médico): asdf
+[21:27:24] 2 (Médico): asdf
 
 [MENSAJE URGENTE]: asdf
 
@@ -38,5 +38,3 @@
 [MENSAJE URGENTE]: asdf
 
 [MENSAJE URGENTE]: ESTO ES URGENTE CHAT
-[00:09:09] 1 (Médico): fasdfadsf
-[00:31:34] 1 (Médico): aasdfasdf

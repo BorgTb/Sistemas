@@ -9,6 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 import javax.swing.DefaultListModel;
 
@@ -19,12 +24,16 @@ public class ControladorAdmin {
     private VistaAdmin vista;
     private Administrador administrador;
     private DefaultListModel<String> modeloListaUsuarios;
+    private Socket socket;
+    private DataOutputStream salida;
+    private DataInputStream entrada;
 
     public ControladorAdmin() {
         this.vista = VistaAdmin.getInstance(this); // Pass 'this' to the VistaAdmin constructor
         administrador = new Administrador();
         modeloListaUsuarios = new DefaultListModel<>(); // Inicializar modeloListaUsuarios
         vista.setModeloListaUsuarios(modeloListaUsuarios); // Establecer el modelo en la vista
+        conectarAlServidor();
         vista.addAgregarUsuarioListener(new AgregarUsuarioListener());
         vista.addEnviarUrgenteListener(new EnviarUrgenteListener());
         vista.addVerEstadisticasListener(new VerEstadisticasListener());
@@ -86,6 +95,18 @@ public class ControladorAdmin {
         return tempFile.renameTo(inputFile);
     }
 
+    private void conectarAlServidor() {
+        try {
+            socket = new Socket("localhost", 12345);
+            salida = new DataOutputStream(socket.getOutputStream());
+            entrada = new DataInputStream(socket.getInputStream());
+            salida.writeUTF("Administrador");
+            System.out.println("Conectado al servidor");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class AgregarUsuarioListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -113,8 +134,20 @@ public class ControladorAdmin {
     private class EnviarUrgenteListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Lógica para el botón Enviar Urgente
-            System.out.println("Enviar Urgente presionado");
+            // Obtener el mensaje urgente desde el campo de texto en la vista
+            String mensajeUrgente = vista.getMensajeUrgente();  // Este método deberá ser creado en VistaAdmin.
+
+            if (mensajeUrgente.isEmpty()) {
+                System.out.println("El mensaje urgente no puede estar vacío.");
+                return;
+            }
+
+            try {
+                administrador.enviarMensajeUrgenteAChats(mensajeUrgente,salida);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            System.out.println("Mensaje de urgencia enviado a todos los chats.");
         }
     }
 
@@ -125,4 +158,6 @@ public class ControladorAdmin {
             System.out.println("Ver Estadísticas presionado");
         }
     }
+
+
 }

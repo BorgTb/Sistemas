@@ -37,7 +37,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
         this.vistaMedico.addActionListener(this);
         this.vistaMedico.addListSelectionListener(this);
         conectarAlServidor();
-        cargarMedicos();
+        //cargarMedicos();
         escucharMensajes();
         this.vistaMedico.setModeloListaMedicos(this.modeloListaMedicos);
     }
@@ -74,21 +74,27 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             JOptionPane.showMessageDialog(null, "Error al cargar los médicos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void escucharMensajes() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     String mensaje;
-                    while ((mensaje = entrada.readUTF()) != null) {                       
-                        if (mensaje.contains("PrivateMessage")) {
-                            String emisor = mensaje.split(" ")[1].split("")[0]; //util para despues obtener la ventana exacta
+                    while ((mensaje = entrada.readUTF()) != null) {
+                        if (mensaje.startsWith("Conectados:")) {
+                            actualizarListaConectados(mensaje);
+                        } else if (mensaje.contains("PrivateMessage")) {
+                            String emisor = mensaje.split(" ")[1].split("")[0];
                             String remitente = mensaje.split(" ")[1].split("\\[")[0];
                             String contenido = convertirMensajePrivado(mensaje);
                             vistaMedico.mostrarMensajePrivado(remitente, contenido);
-                        } else {
+                        } else if (mensaje.contains("URGENTE")) {
+                            String[] partes = mensaje.split(";");
+                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
+                            vistaMedico.mostrarMensajeUrgente(mensajeUrgente);
+                        }else {
                             String[] partes = mensaje.split(":", 2);
+                            
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
@@ -117,6 +123,15 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                 }
             }
         }).start();
+    }
+    private void actualizarListaConectados(String mensaje) {
+        String[] partes = mensaje.split(":")[1].split(",");
+        modeloListaMedicos.clear();
+        for (String medico : partes) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+                modeloListaMedicos.addElement(medico);
+            }
+        }
     }
 
     private String convertirMensajePrivado(String mensaje) {

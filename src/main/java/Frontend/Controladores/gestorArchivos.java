@@ -53,6 +53,20 @@ public class gestorArchivos {
 
     public List<String> leerChatsPrivados(String emisor, String receptor) {
         List<String> chats = new ArrayList<>();
+        String nombreArchivo = emisor + "-" + receptor + ".txt";
+        String nombreArchivo2 = receptor + "-" + emisor + ".txt";
+        File archivo = new File(fileDirectory, nombreArchivo);
+        File archivo2 = new File(fileDirectory, nombreArchivo2);
+        
+        if (!archivo.exists()) {
+            //crea un archivo txt con el nombre del receptor y emisor
+            try {
+            archivo.createNewFile();
+            archivo2.createNewFile();
+            } catch (IOException e) {
+            e.printStackTrace();
+            }
+        }
 
         String fileName = fileDirectory + "/" + emisor + "-" + receptor + ".txt";
 
@@ -70,5 +84,6 @@ public class gestorArchivos {
         }
         return chats;
     }
+    
 
 }
