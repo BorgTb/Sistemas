@@ -25,7 +25,7 @@ public class Administrador {
     public Administrador() {
     }
 
-    public void guardarClienteEnArchivo(String nombre, String rut, String correo, String clave, String tipoUsuario, String area) {
+    public void guardarClienteEnArchivo(String nombre, String rut, String correo, String clave, String tipoUsuario, String area, String primerInicio) {
         String fileName = tipoUsuario.equalsIgnoreCase("Medico") ? "Medicos.txt" : "Administrativos.txt";
         String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         File directory = new File("./src/main/java/Users");
@@ -39,7 +39,7 @@ public class Administrador {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(String.format("Nombre: %s, RUT: %s, Correo: %s, Clave: %s, TipoUsuario: %s, Area: %s", nombre, rut, correo, clave, tipoUsuario, area));
+            writer.write(String.format("Nombre: %s, RUT: %s, Correo: %s, Clave: %s, TipoUsuario: %s, Area: %s, PrimerInicio: %s", nombre, rut, correo, clave, tipoUsuario, area, primerInicio));
             writer.newLine();
             System.out.println("Cliente guardado en archivo: " + filePath);
         } catch (IOException e) {
@@ -56,12 +56,12 @@ public class Administrador {
     }
 
     private boolean autenticarDesdeArchivo(String fileName, String rut, String clave) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String fileRut = parts[1].split(": ")[1];
                     String fileClave = parts[3].split(": ")[1];
                     if (fileRut.equals(rut) && fileClave.equals(clave)) {
@@ -84,12 +84,12 @@ public class Administrador {
     }
 
     private Document retornarDesdeArchivo(String fileName, String rut) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String fileRut = parts[1].split(": ")[1];
                     if (fileRut.equals(rut)) {
                         Document doc = new Document();
@@ -99,6 +99,7 @@ public class Administrador {
                         doc.append("clave", parts[3].split(": ")[1]);
                         doc.append("tipoUsuario", parts[4].split(": ")[1]);
                         doc.append("area", parts[5].split(": ")[1].equals("null") ? null : parts[5].split(": ")[1]);
+                        doc.append("primerInicio", Boolean.parseBoolean(parts[6].split(": ")[1])); // Agrega el campo PrimerInicio
                         return doc;
                     }
                 }
@@ -134,6 +135,38 @@ public class Administrador {
                 e.printStackTrace();
             }
         }
+    }public void cambiarContrasenaMedico(String rut, String nuevaContrasena) {
+        cambiarContrasenaEnArchivo("Medicos.txt", rut, nuevaContrasena);
     }
+    
+    public void cambiarContrasenaAdministrativo(String rut, String nuevaContrasena) {
+        cambiarContrasenaEnArchivo("Administrativos.txt", rut, nuevaContrasena);
+    }
+    
+    private void cambiarContrasenaEnArchivo(String fileName, String rut, String nuevaContrasena) {
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        String tempFilePath = Paths.get("./src/main/java/Users", "temp_" + fileName).toString();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts[1].split(": ")[1].equals(rut)) {
+                    parts[3] = "Clave: " + nuevaContrasena; // Actualiza la contraseña
+                    parts[6] = "PrimerInicio: false"; // Actualiza el estado de primer inicio
+                    writer.write(String.join(", ", parts) + "\n");
+                } else {
+                    writer.write(line + "\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Renombra el archivo temporal al nombre original
+        new File(filePath).delete();
+        new File(tempFilePath).renameTo(new File(filePath));
+    }
+
+
 
 }

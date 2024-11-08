@@ -77,7 +77,7 @@ public class ControladorAdmin {
     }
 
     public boolean reiniciarClaveUsuario(String fileName, String rutUsuario, String nuevaClave) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         File inputFile = new File(filePath);
         File tempFile = new File(filePath + ".tmp");
     
@@ -116,13 +116,14 @@ public class ControladorAdmin {
             String clave = vista.getClave();
             String tipoUsuario = vista.getTipoUsuario();
             String area = vista.getArea();
+            String PrimerInicio = "true";
 
             if (nombre.isEmpty() || rut.isEmpty() || correo.isEmpty() || clave.isEmpty() || tipoUsuario.isEmpty()) {
                 System.out.println("Todos los campos deben estar llenos.");
                 return;
             }
 
-            administrador.guardarClienteEnArchivo(nombre, rut, correo, clave, tipoUsuario, area);
+            administrador.guardarClienteEnArchivo(nombre, rut, correo, clave, tipoUsuario, area, PrimerInicio);
             vista.limpiarCampos();
         }
     }
