@@ -233,6 +233,8 @@ public class VistaPabellon extends JFrame {
             System.out.println("El campo de mensaje está vacío, no se envía nada.");
         }
     }
+
+    
     private void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
     }

@@ -226,11 +226,13 @@ public class VistaMedico extends JFrame {
         tabbedPane.setTabComponentAt(index, tabPanel);
         tabbedPane.setSelectedComponent(panelChatPrivado);
 
-        gestorArchivos.leerChatsPrivados(nombreUsuario, medico.split(" ")[2]).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
+        System.out.println("Abriendo chat privado con " + medico);
+
+        gestorArchivos.leerChatsPrivados(nombreUsuario, medico).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
         
 
         chatsAbiertos.put(medico, panelChatPrivado);
-        areasDeChatPrivado.put(medico.split(" ")[2], areaChatPrivado);
+        areasDeChatPrivado.put(medico, areaChatPrivado);
         
 
         botonEnviarMensajePrivado.addActionListener(new ActionListener() {
@@ -241,10 +243,9 @@ public class VistaMedico extends JFrame {
                     String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
                     String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
                     try {
-                        System.out.println("Enviando mensaje privado a " + medico + ": " + mensajeFormateado);
                         areaChatPrivado.append(mensajeFormateado + "\n");
-                        gestorArchivos.guardarChat(nombreUsuario+"-"+medico.split(" ")[2], mensajeFormateado);
-                        gestorArchivos.guardarChat(medico.split(" ")[2]+"-"+nombreUsuario, mensajeFormateado);
+                        gestorArchivos.guardarChat(nombreUsuario+"-"+medico, mensajeFormateado);
+                        gestorArchivos.guardarChat(medico+"-"+nombreUsuario, mensajeFormateado);
                         salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
                         campoMensajePrivado.setText("");
                     } catch (IOException ex) {

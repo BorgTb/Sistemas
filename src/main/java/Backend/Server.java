@@ -20,6 +20,8 @@ public class Server {
                 ClienteHandler clienteHandler = new ClienteHandler(socket);
                 clientes.add(clienteHandler);
                 new Thread(clienteHandler).start();
+                // Mueve esta línea dentro del método run del ClienteHandler
+                // enviarListaConectados();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,11 +42,25 @@ public class Server {
         for (ClienteHandler cliente : clientes) {
             if (cliente.nombre.equals(nombre)) {
                 try {
-                    System.out.println("Enviando mensaje privado a " + nombre);
                     cliente.salida.writeUTF(mensaje);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    public static void enviarListaConectados() {
+        StringBuilder listaConectados = new StringBuilder("Conectados:");
+        for (ClienteHandler cliente : clientes) {
+            listaConectados.append(cliente.nombre).append(",");
+        }
+        String mensaje = listaConectados.toString();
+        for (ClienteHandler cliente : clientes) {
+            try {
+                cliente.salida.writeUTF(mensaje);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -62,48 +78,43 @@ public class Server {
         public void run() {
             try (DataInputStream entrada = new DataInputStream(socket.getInputStream())) {
                 salida = new DataOutputStream(socket.getOutputStream());
-                String mensaje;
-
                 this.nombre = entrada.readUTF();
-                
+                enviarListaConectados(); // Enviar lista de conectados cuando un nuevo cliente se conecta
+
+                String mensaje;
                 while ((mensaje = entrada.readUTF()) != null) {
-                    // nombre es quien emiute el mensaje
-                    // System.err.println("Nuevo cliente conectado: " + nombre);
                     if (mensaje.startsWith("Privado:")) {
-                        // Mensaje privado
                         
                         String nombreDestinatario = obtenerNombreDestinatario(mensaje);
-                        mensaje = parsearMensajePrivado(mensaje,this.nombre);;
-                        System.out.println("Mensaje privado: " + mensaje);
-                        System.out.println("Destinatario: " + nombreDestinatario);
-
+                        mensaje = parsearMensajePrivado(mensaje, this.nombre);
                         enviarMensajePrivado(mensaje, nombreDestinatario);
-
                     } else {
                         enviarMensajeATodos(mensaje);
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                clientes.remove(this);
+                enviarListaConectados(); // Enviar lista de conectados cuando un cliente se desconecta
             }
         }
 
         private String obtenerNombreDestinatario(String mensaje) {
             String[] partes = mensaje.split(" ");
-            return partes[2].split(":")[0];
+            return partes[0].split(":")[1];
         }
 
         private String parsearMensajePrivado(String mensaje, String emisor) {
             int index = mensaje.indexOf('[');
             if (index != -1) {
-                mensaje = "PrivateMessage:"+" "+ emisor + mensaje.substring(index);
+                mensaje = "PrivateMessage:" + " " + emisor + mensaje.substring(index);
             }
             return mensaje;
         }
     }
 
     public static void main(String[] args) {
-        // Enviando mensaje privado a asd - 1: [11:20:13] 2 (Médico): saludame asd
         new Server();
     }
 }
