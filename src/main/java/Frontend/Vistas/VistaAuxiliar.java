@@ -43,7 +43,8 @@ public class VistaAuxiliar extends JFrame {
         areaChatAuxiliar.setEditable(false);
         campoMensajeAuxiliar = new JTextField();
         botonEnviarMensajeAuxiliar = new JButton("Enviar");
-
+        JButton botonLimpiarChat = new JButton("Limpiar");
+        panelAuxiliar.add(botonLimpiarChat, BorderLayout.NORTH);
         panelAuxiliar.add(new JScrollPane(areaChatAuxiliar), BorderLayout.CENTER);
         JPanel panelInputAuxiliar = new JPanel(new BorderLayout());
         panelInputAuxiliar.add(campoMensajeAuxiliar, BorderLayout.CENTER);
@@ -59,6 +60,12 @@ public class VistaAuxiliar extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
+            }
+        });
+        botonLimpiarChat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                areaChatAuxiliar.setText("");
             }
         });
     }

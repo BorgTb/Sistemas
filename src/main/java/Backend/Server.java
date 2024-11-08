@@ -3,6 +3,7 @@ package Backend;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.runtime.SwitchBootstraps;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -53,7 +54,10 @@ public class Server {
     public static void enviarListaConectados() {
         StringBuilder listaConectados = new StringBuilder("Conectados:");
         for (ClienteHandler cliente : clientes) {
-            listaConectados.append(cliente.nombre).append(",");
+            if (!cliente.nombre.equals("Administrador")) {
+                listaConectados.append(cliente.nombre).append(",");
+            }
+            
         }
         String mensaje = listaConectados.toString();
         for (ClienteHandler cliente : clientes) {
@@ -83,12 +87,12 @@ public class Server {
 
                 String mensaje;
                 while ((mensaje = entrada.readUTF()) != null) {
+
                     if (mensaje.startsWith("Privado:")) {
-                        
                         String nombreDestinatario = obtenerNombreDestinatario(mensaje);
                         mensaje = parsearMensajePrivado(mensaje, this.nombre);
                         enviarMensajePrivado(mensaje, nombreDestinatario);
-                    } else {
+                    }else {
                         enviarMensajeATodos(mensaje);
                     }
                 }

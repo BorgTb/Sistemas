@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -58,22 +60,6 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
         }
     }
 
-    private void cargarMedicos() {
-        try (BufferedReader br = new BufferedReader(new FileReader("./src/main/java/Users/Medicos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(", ");
-                String nombreMedico = partes[0].split(": ")[1];
-                String rutMedico = partes[1].split(": ")[1];
-                if (!nombreMedico.equals(nombreUsuario)) {
-                    modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar los médicos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
     private void escucharMensajes() {
         new Thread(new Runnable() {
             @Override
@@ -88,8 +74,13 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                             String remitente = mensaje.split(" ")[1].split("\\[")[0];
                             String contenido = convertirMensajePrivado(mensaje);
                             vistaMedico.mostrarMensajePrivado(remitente, contenido);
-                        } else {
+                        } else if (mensaje.contains("URGENTE")) {
+                            String[] partes = mensaje.split(";");
+                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
+                            vistaMedico.mostrarMensajeUrgente(mensajeUrgente);
+                        }else {
                             String[] partes = mensaje.split(":", 2);
+                            
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
@@ -119,15 +110,34 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             }
         }).start();
     }
-    private void actualizarListaConectados(String mensaje) {
+   private void actualizarListaConectados(String mensaje) {
+        Set<String> rutsMedicos = obtenerRutsMedicos();
         String[] partes = mensaje.split(":")[1].split(",");
         modeloListaMedicos.clear();
         for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario) && rutsMedicos.contains(medico)) {
                 modeloListaMedicos.addElement(medico);
             }
         }
     }
+
+    private Set<String> obtenerRutsMedicos() {
+            Set<String> rutsMedicos = new HashSet<>();
+            String filePath = "./src/main/java/Users/Medicos.txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(", ");
+                    String rut = parts[1].split(": ")[1];
+                    System.out.println("Rut: " + rut);
+                    rutsMedicos.add(rut);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return rutsMedicos;
+        }
+
 
     private String convertirMensajePrivado(String mensaje) {
         int index = mensaje.indexOf('[');
