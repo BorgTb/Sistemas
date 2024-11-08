@@ -4,16 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Paths;
 
 import javax.swing.DefaultListModel;
 
@@ -46,7 +44,7 @@ public class ControladorAdmin {
     }
 
     private void cargarUsuariosDesdeArchivo(String fileName) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String linea;
             while ((linea = br.readLine()) != null) {
@@ -65,7 +63,7 @@ public class ControladorAdmin {
     }
 
     public boolean reiniciarClaveUsuario(String fileName, String rutUsuario, String nuevaClave) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         File inputFile = new File(filePath);
         File tempFile = new File(filePath + ".tmp");
     

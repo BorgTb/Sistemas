@@ -58,22 +58,6 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
         }
     }
 
-    private void cargarMedicos() {
-        try (BufferedReader br = new BufferedReader(new FileReader("Sistemas/src/main/java/Users/Medicos.txt"))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(", ");
-                String nombreMedico = partes[0].split(": ")[1];
-                String rutMedico = partes[1].split(": ")[1];
-                if (!nombreMedico.equals(nombreUsuario)) {
-                    modeloListaMedicos.addElement(nombreMedico + " - " + rutMedico);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar los médicos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
     private void escucharMensajes() {
         new Thread(new Runnable() {
             @Override

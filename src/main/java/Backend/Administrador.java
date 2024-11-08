@@ -8,11 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.bson.Document;
 
@@ -27,8 +22,8 @@ public class Administrador {
 
     public void guardarClienteEnArchivo(String nombre, String rut, String correo, String clave, String tipoUsuario, String area) {
         String fileName = tipoUsuario.equalsIgnoreCase("Medico") ? "Medicos.txt" : "Administrativos.txt";
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
-        File directory = new File("Sistemas/src/main/java/Users");
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
+        File directory = new File("./src/main/java/Users");
         if (tipoUsuario=="Medico"){
             area=null;
         }
@@ -56,7 +51,7 @@ public class Administrador {
     }
 
     private boolean autenticarDesdeArchivo(String fileName, String rut, String clave) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -84,7 +79,7 @@ public class Administrador {
     }
 
     private Document retornarDesdeArchivo(String fileName, String rut) {
-        String filePath = Paths.get("Sistemas/src/main/java/Users", fileName).toString();
+        String filePath = Paths.get("./src/main/java/Users", fileName).toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {

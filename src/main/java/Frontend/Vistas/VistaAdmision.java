@@ -62,10 +62,9 @@ public class VistaAdmision extends JFrame {
         this.rolUsuario = rolUsuario;
         this.chatsAbiertos = new HashMap<>();
 
-        setSize(600, 400);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        JTabbedPane tabbedPane = new JTabbedPane();
 
         JPanel panelMedico = new JPanel(new BorderLayout());
         areaChatMedico = new JTextArea();
@@ -260,77 +259,76 @@ public class VistaAdmision extends JFrame {
     }
 
     public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario, String rolUsuario) {
-    if (chatsAbiertos.containsKey(medico)) {
-        this.tabbedPane.setSelectedComponent(chatsAbiertos.get(medico));
-        return;
-    }
-
-    JPanel panelChatPrivado = new JPanel(new BorderLayout());
-    JTextArea areaChatPrivado = new JTextArea();
-    areaChatPrivado.setEditable(false);
-    JScrollPane scrollPane = new JScrollPane(areaChatPrivado);
-    panelChatPrivado.add(scrollPane, BorderLayout.CENTER);
-
-    JPanel panelInputPrivado = new JPanel(new BorderLayout());
-    JTextField campoMensajePrivado = new JTextField();
-    JButton botonEnviarMensajePrivado = new JButton("Enviar");
-    panelInputPrivado.add(campoMensajePrivado, BorderLayout.CENTER);
-    panelInputPrivado.add(botonEnviarMensajePrivado, BorderLayout.EAST);
-    panelChatPrivado.add(panelInputPrivado, BorderLayout.SOUTH);
-
-    JPanel tabPanel = new JPanel(new BorderLayout());
-    tabPanel.setOpaque(false);
-    JLabel tabLabel = new JLabel("Chat con " + medico);
-    JButton closeButton = new JButton("X");
-    closeButton.setMargin(new Insets(0, 20, 0, 0));
-    closeButton.setBorder(null);
-    closeButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int index = tabbedPane.indexOfComponent(panelChatPrivado);
-            if (index != -1) {
-                tabbedPane.remove(index);
-                chatsAbiertos.remove(medico);
-                areasDeChatPrivado.remove(medico);
-            }
+        if (chatsAbiertos.containsKey(medico)) {
+            tabbedPane.setSelectedComponent(chatsAbiertos.get(medico));
+            return;
         }
-    });
 
-    tabPanel.add(tabLabel, BorderLayout.WEST);
-    tabPanel.add(closeButton, BorderLayout.EAST);
+        JPanel panelChatPrivado = new JPanel(new BorderLayout());
+        JTextArea areaChatPrivado = new JTextArea();
+        areaChatPrivado.setEditable(false);
+        JTextField campoMensajePrivado = new JTextField();
+        JButton botonEnviarMensajePrivado = new JButton("Enviar");
+        panelChatPrivado.add(new JScrollPane(areaChatPrivado), BorderLayout.CENTER);
+        JPanel panelInputPrivado = new JPanel(new BorderLayout());
+        panelInputPrivado.add(campoMensajePrivado, BorderLayout.CENTER);
+        panelInputPrivado.add(botonEnviarMensajePrivado, BorderLayout.EAST);
+        panelChatPrivado.add(panelInputPrivado, BorderLayout.SOUTH);
 
-    this.tabbedPane.addTab("Chat con " + medico, panelChatPrivado);
-    int index = tabbedPane.indexOfComponent(panelChatPrivado);
-    this.tabbedPane.setTabComponentAt(index, tabPanel);
-    this.tabbedPane.setSelectedComponent(panelChatPrivado);
-
-    gestorArchivos.leerChatsPrivados(nombreUsuario, medico).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
-
-    chatsAbiertos.put(medico, panelChatPrivado);
-    areasDeChatPrivado.put(medico, areaChatPrivado);
-
-    botonEnviarMensajePrivado.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String mensaje = campoMensajePrivado.getText();
-            if (!mensaje.isEmpty()) {
-                String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
-                String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
-                try {
-                    areaChatPrivado.append(mensajeFormateado + "\n");
-                    gestorArchivos.guardarChat(nombreUsuario + "-" + medico, mensajeFormateado);
-                    salida.writeUTF("PRIVADO " + medico + " " + mensaje);
-                    campoMensajePrivado.setText("");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+        JPanel tabPanel = new JPanel(new BorderLayout());
+        tabPanel.setOpaque(false);
+        JLabel tabLabel = new JLabel("Chat con " + medico);
+        JButton closeButton = new JButton("X");
+        closeButton.setMargin(new Insets(0, 20, 0, 0));
+        closeButton.setBorder(null);
+        closeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = tabbedPane.indexOfComponent(panelChatPrivado);
+                if (index != -1) {
+                    tabbedPane.remove(index);
+                    chatsAbiertos.remove(medico);
+                    areasDeChatPrivado.remove(medico);
                 }
             }
-        }
-    });
+        });
 
-    
-}
+        tabPanel.add(tabLabel, BorderLayout.WEST);
+        tabPanel.add(closeButton, BorderLayout.EAST);
 
+        tabbedPane.addTab("Chat con " + medico, panelChatPrivado);
+        int index = tabbedPane.indexOfComponent(panelChatPrivado);
+        tabbedPane.setTabComponentAt(index, tabPanel);
+        tabbedPane.setSelectedComponent(panelChatPrivado);
+
+        gestorArchivos.leerChatsPrivados(nombreUsuario, medico).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
+
+        chatsAbiertos.put(medico, panelChatPrivado);
+        areasDeChatPrivado.put(medico, areaChatPrivado);
+
+        botonEnviarMensajePrivado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String mensaje = campoMensajePrivado.getText();
+                if (!mensaje.isEmpty()) {
+                    String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
+                    String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
+                    try {
+                        areaChatPrivado.append(mensajeFormateado + "\n");
+                        gestorArchivos.guardarChat(nombreUsuario + "-" + medico, mensajeFormateado);
+                        gestorArchivos.guardarChat(medico + "-" + nombreUsuario, mensajeFormateado);
+                        salida.writeUTF("Privado:" + medico + ":" + mensajeFormateado);
+                        campoMensajePrivado.setText("");
+                    } catch (IOException ex) {
+                        System.err.println("Error al enviar el mensaje privado: " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                } else {
+                    System.out.println("El campo de mensaje está vacío, no se envía nada.");
+                }
+            }
+        });
+    }
 
     private void escucharMensajes() {
         new Thread(new Runnable() {
