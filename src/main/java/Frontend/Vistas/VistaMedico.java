@@ -348,7 +348,6 @@ public class VistaMedico extends JFrame {
         mostrarMensajeExamenes(mensaje);
         mostrarMensajeMedico(mensaje);
         mostrarMensajeAuxiliar(mensaje);
-        
     }
 
     public JTextField getCampoMensajeMedico() {

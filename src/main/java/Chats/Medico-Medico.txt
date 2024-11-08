@@ -38,3 +38,4 @@
 [MENSAJE URGENTE]: asdf
 
 [MENSAJE URGENTE]: ESTO ES URGENTE CHAT
+[00:08:58] 1 (Médico): asdfasf
