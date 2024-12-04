@@ -14,8 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -75,7 +77,7 @@ public class VistaPabellon extends JFrame {
         panelMedico.add(botonLimpiarChatMedico, BorderLayout.NORTH);
         tabbedPane.addTab("Chat Médico", panelMedico);
 
-         // Pestaña de chat con auxiliar
+        // Pestaña de chat con auxiliar
         JPanel panelAuxiliar = new JPanel(new BorderLayout());
         areaChatAuxiliar = new JTextArea();
         areaChatAuxiliar.setEditable(false);
@@ -134,7 +136,7 @@ public class VistaPabellon extends JFrame {
         panelExamenes.add(panelInputExamenes, BorderLayout.SOUTH);
         panelExamenes.add(botonLimpiarChatExamenes, BorderLayout.NORTH);
         tabbedPane.addTab("Chat Exámenes", panelExamenes);
-// Panel de lista de médicos
+        // Panel de lista de médicos
         listaMedicos = new JList<>();
         JScrollPane scrollListaMedicos = new JScrollPane(listaMedicos);
         JPanel panelListaMedicos = new JPanel(new BorderLayout());
@@ -149,13 +151,13 @@ public class VistaPabellon extends JFrame {
 
         // Set preferred width for the panel
         panelListaMedicos.setPreferredSize(new java.awt.Dimension(200, 0));
-        
+
         listaMedicos.setModel(modeloListaMedicos);
-        
+
         add(tabbedPane, BorderLayout.CENTER);
         add(panelListaMedicos, BorderLayout.EAST);
-         conectarAlServidor();
-         escucharMensajes();
+        conectarAlServidor();
+        escucharMensajes();
         listaMedicos.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedMedico = (String) listaMedicos.getSelectedValue();
@@ -164,19 +166,19 @@ public class VistaPabellon extends JFrame {
                             "¿Desea enviar un mensaje privado a " + selectedMedico + "?", "Mensaje Privado",
                             JOptionPane.YES_NO_OPTION);
                     if (response == JOptionPane.YES_OPTION) {
-                        abrirChatPrivado(selectedMedico, this.salida, this.entrada, this.nombreUsuario, this.rolUsuario);
+                        abrirChatPrivado(selectedMedico, this.salida, this.entrada, this.nombreUsuario,
+                                this.rolUsuario);
                     }
                 }
             }
         });
-         gestorArchivos.leerChats("pabellon-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
-         gestorArchivos.leerChats("medico-pabellon").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
-         gestorArchivos.leerChats("examenes-pabellon").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
-         gestorArchivos.leerChats("admision-pabellon").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
-         gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
-         add(tabbedPane);
-         conectarAlServidor();
-         escucharMensajes();
+        gestorArchivos.leerChats("pabellon-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
+        gestorArchivos.leerChats("medico-pabellon").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
+        gestorArchivos.leerChats("examenes-pabellon").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
+        gestorArchivos.leerChats("admision-pabellon").forEach(mensaje -> areaChatAdmision.append(mensaje + "\n"));
+        gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
+        add(tabbedPane);
+       
 
         botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
             @Override
@@ -214,21 +216,21 @@ public class VistaPabellon extends JFrame {
                 limpiarChatAuxiliar();
             }
         });
-        
+
         botonLimpiarChatAdmision.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarChatAdmision();
             }
         });
-        
+
         botonLimpiarChatPabellon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarChatPabellon();
             }
         });
-        
+
         botonLimpiarChatExamenes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -236,28 +238,60 @@ public class VistaPabellon extends JFrame {
             }
         });
     }
+
     private void conectarAlServidor() {
-        try {
-            socket = new Socket("localhost", 12345);
-            salida = new DataOutputStream(socket.getOutputStream());
-            entrada = new DataInputStream(socket.getInputStream());
-            salida.writeUTF(nombreUsuario);
-            System.out.println("Conectado al servidor");
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (socket == null || socket.isClosed()) {
+            try {
+                System.out.println("Intentando conectar al servidor...");
+                socket = new Socket("34.176.62.179", 8080);
+                salida = new DataOutputStream(socket.getOutputStream());
+                entrada = new DataInputStream(socket.getInputStream());
+                salida.writeUTF(nombreUsuario);
+                System.out.println("Conectado al servidor");
+                break;
+            } catch (IOException e) {
+                System.err.println("Error al conectar: " + e.getMessage());
+                try {
+                    Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
+
     private void actualizarListaConectados(String mensaje) {
+        Set<String> rutsMedicos = obtenerRutsMedicos();
         String[] partes = mensaje.split(":")[1].split(",");
         modeloListaMedicos.clear();
         for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario) && rutsMedicos.contains(medico)) {
                 modeloListaMedicos.addElement(medico);
             }
         }
     }
 
-    public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario, String rolUsuario) {
+    private Set<String> obtenerRutsMedicos() {
+            Set<String> rutsMedicos = new HashSet<>();
+            String filePath = "./src/main/java/Users/Medicos.txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(", ");
+                    String rut = parts[1].split(": ")[1];
+                    System.out.println("Rut: " + rut);
+                    rutsMedicos.add(rut);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return rutsMedicos;
+        }
+
+
+
+    public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario,
+            String rolUsuario) {
         if (chatsAbiertos.containsKey(medico)) {
             tabbedPane.setSelectedComponent(chatsAbiertos.get(medico));
             return;
@@ -300,7 +334,8 @@ public class VistaPabellon extends JFrame {
         tabbedPane.setTabComponentAt(index, tabPanel);
         tabbedPane.setSelectedComponent(panelChatPrivado);
 
-        gestorArchivos.leerChatsPrivados(nombreUsuario, medico).forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
+        gestorArchivos.leerChatsPrivados(nombreUsuario, medico)
+                .forEach(mensaje -> areaChatPrivado.append(mensaje + "\n"));
 
         chatsAbiertos.put(medico, panelChatPrivado);
         areasDeChatPrivado.put(medico, areaChatPrivado);
@@ -311,7 +346,8 @@ public class VistaPabellon extends JFrame {
                 String mensaje = campoMensajePrivado.getText();
                 if (!mensaje.isEmpty()) {
                     String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
-                    String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
+                    String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): "
+                            + mensaje;
                     try {
                         areaChatPrivado.append(mensajeFormateado + "\n");
                         gestorArchivos.guardarChat(nombreUsuario + "-" + medico, mensajeFormateado);
@@ -328,6 +364,7 @@ public class VistaPabellon extends JFrame {
             }
         });
     }
+
     public void mostrarMensajePrivado(String remitente, String mensaje) {
         JTextArea areaChatPrivado = areasDeChatPrivado.get(remitente);
         if (areaChatPrivado != null) {
@@ -336,6 +373,7 @@ public class VistaPabellon extends JFrame {
             System.out.println("No se ha creado el JTextArea para el chat privado con " + remitente);
         }
     }
+
     private String convertirMensajePrivado(String mensaje) {
         int index = mensaje.indexOf('[');
         if (index != -1) {
@@ -351,6 +389,7 @@ public class VistaPabellon extends JFrame {
         mostrarMensajeMedico(mensaje);
         mostrarMensajeAuxiliar(mensaje);
     }
+
     private void escucharMensajes() {
         new Thread(new Runnable() {
             @Override
@@ -358,37 +397,37 @@ public class VistaPabellon extends JFrame {
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        //System.out.println("Mensaje recibido: " + mensaje);
+                        // System.out.println("Mensaje recibido: " + mensaje);
                         if (mensaje.startsWith("Conectados:")) {
                             actualizarListaConectados(mensaje);
-                        }else if (mensaje.contains("PrivateMessage")) {
+                        } else if (mensaje.contains("PrivateMessage")) {
                             String emisor = mensaje.split(" ")[1].split("")[0];
                             String remitente = mensaje.split(" ")[1].split("\\[")[0];
                             String contenido = convertirMensajePrivado(mensaje);
                             mostrarMensajePrivado(remitente, contenido);
                         } else if (mensaje.contains("URGENTE")) {
                             String[] partes = mensaje.split(";");
-                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
+                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : " + partes[1];
                             mostrarMensajeUrgente(mensajeUrgente);
-                        }else {
+                        } else {
                             String[] partes = mensaje.split(":", 2);
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
                                 switch (pestaña) {
-                                    case "Medico-Admision":
+                                    case "Medico-Pabellon":
                                         mostrarMensajeMedico(contenidoMensaje);
                                         break;
                                     case "Auxiliar":
                                         mostrarMensajeAuxiliar(contenidoMensaje);
                                         break;
-                                    case "Admision-Admision":
+                                    case "Admision-Pabellon":
                                         mostrarMensajeAdmision(contenidoMensaje);
                                         break;
-                                    case "Admision-Pabellon":
+                                    case "Pabellon-Pabellon":
                                         mostrarMensajePabellon(contenidoMensaje);
                                         break;
-                                    case "Examenes-Admision":
+                                    case "Examenes-Pabellon":
                                         mostrarMensajeExamenes(contenidoMensaje);
                                         break;
                                 }
@@ -401,6 +440,7 @@ public class VistaPabellon extends JFrame {
             }
         }).start();
     }
+
     private void enviarMensajeAuxiliar() {
         enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
     }
@@ -416,7 +456,7 @@ public class VistaPabellon extends JFrame {
     private void enviarMensajeExamenes() {
         enviarMensaje("Examenes-Pabellon", campoMensajeExamenes, areaChatExamenes);
     }
-    
+
     private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
         String mensaje = campoMensaje.getText();
         if (!mensaje.isEmpty()) {
@@ -436,38 +476,42 @@ public class VistaPabellon extends JFrame {
         }
     }
 
-    
     private void mostrarMensajeMedico(String mensaje) {
         areaChatMedico.append(mensaje + "\n");
     }
+
     private void mostrarMensajeAdmision(String mensaje) {
         areaChatAdmision.append(mensaje + "\n");
     }
+
     private void mostrarMensajePabellon(String mensaje) {
         areaChatPabellon.append(mensaje + "\n");
     }
+
     private void mostrarMensajeExamenes(String mensaje) {
         areaChatExamenes.append(mensaje + "\n");
     }
+
     private void mostrarMensajeAuxiliar(String mensaje) {
         areaChatAuxiliar.append(mensaje + "\n");
     }
+
     private void limpiarChatMedico() {
         areaChatMedico.setText("");
     }
-    
+
     private void limpiarChatAuxiliar() {
         areaChatAuxiliar.setText("");
     }
-    
+
     private void limpiarChatAdmision() {
         areaChatAdmision.setText("");
     }
-    
+
     private void limpiarChatPabellon() {
         areaChatPabellon.setText("");
     }
-    
+
     private void limpiarChatExamenes() {
         areaChatExamenes.setText("");
     }

@@ -1,0 +1,4 @@
+[04:46:59] 1 (Médico): hola algun pabellon?
+[04:48:13] 1 (Médico): necesito gente de pabellon
+
+[MENSAJE URGENTE]: TODOS A URGENCIAS

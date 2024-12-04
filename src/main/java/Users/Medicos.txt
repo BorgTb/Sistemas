@@ -1,10 +1,10 @@
-Nombre: med1, RUT: 1, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med2, RUT: 2, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med3, RUT: 3, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med4, RUT: 4, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med5, RUT: 5, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med6, RUT: 6, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med7, RUT: 7, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med8, RUT: 8, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med9, RUT: 9, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
-Nombre: med10, RUT: 10, Correo: asd, Clave: asd, TipoUsuario: Medico, Area: null
+Nombre: Juan Perez, RUT: asd, Correo: juan.perez@gmail.com, Clave: asd, TipoUsuario: Medico, Area: null, PrimerInicio: false
+Nombre: Maria Lopez, RUT: med, Correo: maria.lopez@hotmail.com, Clave: med, TipoUsuario: Medico, Area: null, PrimerInicio: false
+Nombre: Carlos Sanchez, RUT: 11223344-5, Correo: carlos.sanchez@gmail.com, Clave: 8k9l0m, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Ana Martinez, RUT: 55667788-0, Correo: ana.martinez@hotmail.com, Clave: 1n2o3p, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Luis Fernandez, RUT: 22334455-6, Correo: luis.fernandez@gmail.com, Clave: 4q5r6s, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Laura Gomez, RUT: 66778899-1, Correo: laura.gomez@hotmail.com, Clave: 7t8u9v, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Pedro Ramirez, RUT: 33445566-7, Correo: pedro.ramirez@gmail.com, Clave: 0w1x2y, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Sofia Torres, RUT: 77889900-2, Correo: sofia.torres@hotmail.com, Clave: 3z4a5b, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Diego Ruiz, RUT: 44556677-8, Correo: diego.ruiz@gmail.com, Clave: 6c7d8e, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: Elena Morales, RUT: 88990011-3, Correo: elena.morales@hotmail.com, Clave: 9f0g1h, TipoUsuario: Medico, Area: null, PrimerInicio: true

@@ -2,6 +2,11 @@ package Frontend.Controladores;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -36,6 +41,26 @@ public class ControladorAdmin {
         vista.addEnviarUrgenteListener(new EnviarUrgenteListener());
         vista.addVerEstadisticasListener(new VerEstadisticasListener());
         cargarUsuarios(); // Llamar al método cargarUsuarios
+    }
+
+    private void conectarAlServidor() {
+        while (socket == null || socket.isClosed()) {
+            try {
+                System.out.println("Intentando conectar al servidor...");
+                socket = new Socket("34.176.62.179", 8080);
+                salida = new DataOutputStream(socket.getOutputStream());
+                entrada = new DataInputStream(socket.getInputStream());
+                System.out.println("Conectado al servidor");
+                break;
+            } catch (IOException e) {
+                System.err.println("Error al conectar: " + e.getMessage());
+                try {
+                    Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
     }
 
     private void cargarUsuarios() {
@@ -73,7 +98,7 @@ public class ControladorAdmin {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String fileRut = parts[1].split(": ")[1];
                     if (fileRut.equals(rutUsuario)) {
                         parts[3] = "Clave: " + nuevaClave;
@@ -93,18 +118,6 @@ public class ControladorAdmin {
         return tempFile.renameTo(inputFile);
     }
 
-    private void conectarAlServidor() {
-        try {
-            socket = new Socket("localhost", 12345);
-            salida = new DataOutputStream(socket.getOutputStream());
-            entrada = new DataInputStream(socket.getInputStream());
-            salida.writeUTF("Administrador");
-            System.out.println("Conectado al servidor");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private class AgregarUsuarioListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -114,13 +127,14 @@ public class ControladorAdmin {
             String clave = vista.getClave();
             String tipoUsuario = vista.getTipoUsuario();
             String area = vista.getArea();
+            String PrimerInicio = "true";
 
             if (nombre.isEmpty() || rut.isEmpty() || correo.isEmpty() || clave.isEmpty() || tipoUsuario.isEmpty()) {
                 System.out.println("Todos los campos deben estar llenos.");
                 return;
             }
 
-            administrador.guardarClienteEnArchivo(nombre, rut, correo, clave, tipoUsuario, area);
+            administrador.guardarClienteEnArchivo(nombre, rut, correo, clave, tipoUsuario, area, PrimerInicio);
             vista.limpiarCampos();
         }
     }

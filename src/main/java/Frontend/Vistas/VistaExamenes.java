@@ -4,14 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -56,6 +60,7 @@ public class VistaExamenes extends JFrame {
     
     private gestorArchivos gestorArchivos = new gestorArchivos();
 
+    @SuppressWarnings("unchecked")
     public VistaExamenes(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
         this.rolUsuario = rolUsuario;
@@ -233,25 +238,52 @@ public class VistaExamenes extends JFrame {
     }
 
     private void conectarAlServidor() {
-        try {
-            socket = new Socket("localhost", 12345);
-            salida = new DataOutputStream(socket.getOutputStream());
-            entrada = new DataInputStream(socket.getInputStream());
-            salida.writeUTF(nombreUsuario);
-            System.out.println("Conectado al servidor");
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (socket == null || socket.isClosed()) {
+            try {
+                System.out.println("Intentando conectar al servidor...");
+                socket = new Socket("34.176.62.179", 8080);
+                salida = new DataOutputStream(socket.getOutputStream());
+                entrada = new DataInputStream(socket.getInputStream());
+                salida.writeUTF(nombreUsuario);
+                System.out.println("Conectado al servidor");
+                break;
+            } catch (IOException e) {
+                System.err.println("Error al conectar: " + e.getMessage());
+                try {
+                    Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
     private void actualizarListaConectados(String mensaje) {
+        Set<String> rutsMedicos = obtenerRutsMedicos();
         String[] partes = mensaje.split(":")[1].split(",");
         modeloListaMedicos.clear();
         for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario) && rutsMedicos.contains(medico)) {
                 modeloListaMedicos.addElement(medico);
             }
         }
     }
+
+    private Set<String> obtenerRutsMedicos() {
+            Set<String> rutsMedicos = new HashSet<>();
+            String filePath = "./src/main/java/Users/Medicos.txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(", ");
+                    String rut = parts[1].split(": ")[1];
+                    System.out.println("Rut: " + rut);
+                    rutsMedicos.add(rut);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return rutsMedicos;
+        }
 
     public void abrirChatPrivado(String medico, DataOutputStream salida, DataInputStream entrada, String nombreUsuario, String rolUsuario) {
         if (chatsAbiertos.containsKey(medico)) {
@@ -354,7 +386,6 @@ public class VistaExamenes extends JFrame {
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        //System.out.println("Mensaje recibido: " + mensaje);
                         if (mensaje.startsWith("Conectados:")) {
                             actualizarListaConectados(mensaje);
                         }else if (mensaje.contains("PrivateMessage")) {
@@ -367,24 +398,26 @@ public class VistaExamenes extends JFrame {
                             String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
                             mostrarMensajeUrgente(mensajeUrgente);
                         }else {
+                            
                             String[] partes = mensaje.split(":", 2);
+                            System.out.println("Partes: " + partes[0] + " " + partes[1]);
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
                                 switch (pestaña) {
-                                    case "Medico-Admision":
+                                    case "Medico-Examenes":
                                         mostrarMensajeMedico(contenidoMensaje);
                                         break;
                                     case "Auxiliar":
                                         mostrarMensajeAuxiliar(contenidoMensaje);
                                         break;
-                                    case "Admision-Admision":
+                                    case "Examenes-Admision":
                                         mostrarMensajeAdmision(contenidoMensaje);
                                         break;
-                                    case "Admision-Pabellon":
+                                    case "Examenes-Pabellon":
                                         mostrarMensajePabellon(contenidoMensaje);
                                         break;
-                                    case "Examenes-Admision":
+                                    case "Examenes-Examenes":
                                         mostrarMensajeExamenes(contenidoMensaje);
                                         break;
                                 }
