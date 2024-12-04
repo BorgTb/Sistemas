@@ -1,56 +1,16 @@
-[04:43:44] 1 (Médico): hola medico 2 para chat general de medicos
-[04:46:39] 1 (Médico): canal de medicos
-
-[MENSAJE URGENTE]: TODOS A URGENCIAS
-[21:36:21] 12345678-9 (Médico): fasdf
-[21:36:25] 12345678-9 (Médico): fasdf
-[21:36:27] 12345678-9 (Médico): asdfadsf
-[23:23:36] 12345678-9 (Médico): fasdfsadfdsaf
-[23:23:39] 12345678-9 (Médico): asdf
-[23:23:56] 12345678-9 (Médico): asdfadf
-[23:23:58] 98765432-1 (Médico): fasdfasf
-[23:24:04] 12345678-9 (Médico): sexooo
-[23:24:06] 98765432-1 (Médico): sexooo
-[23:43:51] asd (Médico): fasdf
-[23:44:01] med (Médico): fasdf
-[23:44:02] asd (Médico): fasdf
-[23:44:04] med (Médico): fasdf
-[23:44:05] asd (Médico): fasdf
-[23:50:13] asd (Médico): fasdfdas
-[23:57:20] asd (Médico): asdf
-[23:57:36] med (Médico): fasdfsdf
-[23:57:40] asd (Médico): asdfads
-[23:57:41] med (Médico): asdfa
-[23:57:42] asd (Médico): asdfasf
-[23:57:43] med (Médico): asdfads
-[23:57:54] med (Médico): hola
-[23:58:15] med (Médico): hola asd
-[00:00:05] asd (Médico): asdfasf
-[00:00:12] asd (Médico): asdfasdfasdf
-[00:00:19] med (Médico): ula
-[00:00:48] asd (Médico): fasdf
-[00:01:05] med (Médico): dfasdf
-[00:19:49] med (Médico): fasdfasdf
-[00:20:35] asd (Médico): asfd
-[00:20:36] med (Médico): asdfasdfsadfsdaffasdf
-[00:26:32] asd (Médico): fasdf
-[00:26:43] med (Médico): fasdfsd
-[00:26:52] asd (Médico): chupalo jose
-[00:27:39] asd (Médico): fasdf
-[00:27:42] med (Médico): fasdf
-[00:29:13] asd (Médico): asdfasdf
-[00:36:30] asd (Médico): fasdfs
-[00:36:55] asd (Médico): asdfasdf
-[00:36:57] med (Médico): afsdfasd
-[00:37:04] asd (Médico): hola 
-[00:37:09] asd (Médico): fasdfads
-[00:37:31] asd (Médico): fsdafsdf
-[00:37:38] asd (Médico): asdfasdf
-[00:37:40] asd (Médico): asdf
-[00:37:44] asd (Médico): fasdf
-[00:37:45] med (Médico): fasdfs
-[00:37:47] asd (Médico): asdfa
-[00:39:15] asd (Médico): fasdfads
-[00:39:17] asd (Médico): asdf
-[00:39:34] asd (Médico): sdfasdfsadfasdfasdf
-[00:39:47] asd (Médico): fasdf
+[18:44:07] asd (M�dico): holaaa
+[18:44:22] asd (M�dico): chaoooo
+[18:46:34] asd (M�dico): sdf
+[18:46:49] asd (M�dico): hola
+[18:46:53] asd (M�dico): mis sangresitas
+[18:47:16] asd (M�dico): asdasd
+[18:47:26] asd (M�dico): toy afk
+[18:47:29] asd (M�dico): que wa
+[18:47:50] med (M�dico): tsha
+[18:47:59] med (M�dico): la mea volaita el net
+[18:48:14] med (M�dico): sdf
+[18:48:24] med (M�dico): asasasdasdasdasd
+[19:05:57] asd (M�dico): uwu
+[19:06:09] asd (M�dico): owo
+[20:26:14] asd (M�dico): wiwi
+[20:26:24] asd (M�dico): bu

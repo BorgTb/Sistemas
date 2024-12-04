@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -27,7 +30,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     private VistaMedico vistaMedico;
     private DefaultListModel<String> modeloListaMedicos = new DefaultListModel<>();
     private gestorArchivos gestorArchivos = new gestorArchivos(); // Instancia del gestor de archivos
-
+    private List<String> mensajeCache = new ArrayList<>();
     public ControladorMedico(String nombreUsuario, String rolUsuario) {
         this.nombreUsuario = nombreUsuario;
         this.rolUsuario = rolUsuario;
@@ -56,6 +59,7 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
                 entrada = new DataInputStream(socket.getInputStream());
                 salida.writeUTF(nombreUsuario);
                 System.out.println("Conexión restablecida con el servidor.");
+                limpiarPantallaYRecargarMensajes();
                 break; // Sale del bucle tras conectar correctamente
             } catch (IOException e) {
                 System.err.println("Servidor no disponible. Intentando reconectar en 5 segundos...");
@@ -69,7 +73,25 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             }
         }
     }
-
+    private void limpiarPantallaYRecargarMensajes() {
+        vistaMedico.limpiarChats();
+        cargarMensajesDesdeArchivos();
+    }
+    
+    private void cargarMensajesDesdeArchivos() {
+        cargarMensajesDesdeArchivo("Medico-Medico", vistaMedico.getAreaChatMedico());
+        cargarMensajesDesdeArchivo("auxiliar", vistaMedico.getAreaChatAuxiliar());
+        cargarMensajesDesdeArchivo("medico-Admision", vistaMedico.getAreaChatAdmision());
+        cargarMensajesDesdeArchivo("medico-Pabellon", vistaMedico.getAreaChatPabellon());
+        cargarMensajesDesdeArchivo("medico-Examenes", vistaMedico.getAreaChatExamenes());
+    }
+    
+    private void cargarMensajesDesdeArchivo(String pestaña, JTextArea areaChat) {
+        List<String> mensajes = gestorArchivos.leerChats(pestaña);
+        for (String mensaje : mensajes) {
+            areaChat.append(mensaje + "\n");
+        }
+    }
     private void monitorearConexion() {
         new Thread(() -> {
             while (true) {
@@ -86,7 +108,6 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             }
         }).start();
     }
-
     private void escucharMensajes() {
         new Thread(() -> {
             while (true) {
@@ -139,17 +160,22 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
                 if (socket == null || socket.isClosed()) {
-                    System.out.println("Socket cerrado. Intentando reconectar...");
-                    conectarAlServidor();
+                    areaChat.append("Conexión caída. Reconectando...\n");
+                    System.out.println("Socket cerrado. Guardando mensaje en caché...");
+                    mensajeCache.add(pestaña + ":" + mensajeFormateado);
+                    gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Guardar en el archivo
+                    campoMensaje.setText("");
+                    return;
                 }
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
                 gestorArchivos.guardarChat(pestaña, mensajeFormateado);
                 campoMensaje.setText("");
             } catch (SocketException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());
-                System.out.println("Intentando reconectar...");
+                System.out.println("Guardando mensaje en caché...");
+                mensajeCache.add(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Guardar en el archivo
                 conectarAlServidor();
-                enviarMensaje(pestaña, campoMensaje, areaChat); // Reintenta enviar el mensaje
             } catch (IOException e) {
                 System.err.println("Error general al enviar el mensaje: " + e.getMessage());
             }

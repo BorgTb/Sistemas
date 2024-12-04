@@ -411,4 +411,12 @@ public class VistaMedico extends JFrame {
     private void limpiarChatExamenes() {
         areaChatExamenes.setText("");
     }
+
+    public void limpiarChats() {
+        getAreaChatMedico().setText("");
+        getAreaChatAuxiliar().setText("");
+        getAreaChatAdmision().setText("");
+        getAreaChatPabellon().setText("");
+        getAreaChatExamenes().setText("");
+    }
 }
