@@ -2,45 +2,41 @@ package Frontend.Controladores;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import Frontend.Vistas.VistaMedico;
 
 public class ControladorMedico implements ActionListener, ListSelectionListener {
-    private String nombreUsuario; //este es el rut del medico
+    private String nombreUsuario; // Este es el rut del médico
     private String rolUsuario;
     private Socket socket;
     private DataOutputStream salida;
     private DataInputStream entrada;
     private VistaMedico vistaMedico;
     private DefaultListModel<String> modeloListaMedicos = new DefaultListModel<>();
-    gestorArchivos gestorArchivos = new gestorArchivos(); // Create an instance of the GestorArchivos class
+    private gestorArchivos gestorArchivos = new gestorArchivos(); // Instancia del gestor de archivos
 
     public ControladorMedico(String nombreUsuario, String rolUsuario) {
-        this.nombreUsuario = nombreUsuario; // Asegúrate de que este es el rut del médico
+        this.nombreUsuario = nombreUsuario;
         this.rolUsuario = rolUsuario;
         this.vistaMedico = new VistaMedico();
         this.vistaMedico.addActionListener(this);
         this.vistaMedico.addListSelectionListener(this);
         conectarAlServidor();
-        //cargarMedicos();
         escucharMensajes();
+        monitorearConexion(); // Inicia la monitorización de la conexión
         this.vistaMedico.setModeloListaMedicos(this.modeloListaMedicos);
     }
 
@@ -49,106 +45,127 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
     }
 
     private void conectarAlServidor() {
-        try {
-            socket = new Socket("localhost", 12345);
-            salida = new DataOutputStream(socket.getOutputStream());
-            entrada = new DataInputStream(socket.getInputStream());
-            salida.writeUTF(nombreUsuario);
-            System.out.println("Conectado al servidor");
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close(); // Cierra el socket antiguo si existe
+                }
+                System.out.println("Intentando conectar al servidor...");
+                socket = new Socket("34.176.62.179", 8080);
+                salida = new DataOutputStream(socket.getOutputStream());
+                entrada = new DataInputStream(socket.getInputStream());
+                salida.writeUTF(nombreUsuario);
+                System.out.println("Conexión restablecida con el servidor.");
+                break; // Sale del bucle tras conectar correctamente
+            } catch (IOException e) {
+                System.err.println("Servidor no disponible. Intentando reconectar en 5 segundos...");
+                try {
+                    Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Reconexión interrumpida.");
+                    break;
+                }
+            }
         }
     }
 
-    private void escucharMensajes() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    private void monitorearConexion() {
+        new Thread(() -> {
+            while (true) {
                 try {
-                    String mensaje;
-                    while ((mensaje = entrada.readUTF()) != null) {
-                        if (mensaje.startsWith("Conectados:")) {
-                            actualizarListaConectados(mensaje);
-                        } else if (mensaje.contains("PrivateMessage")) {
-                            String emisor = mensaje.split(" ")[1].split("")[0];
-                            String remitente = mensaje.split(" ")[1].split("\\[")[0];
-                            String contenido = convertirMensajePrivado(mensaje);
-                            vistaMedico.mostrarMensajePrivado(remitente, contenido);
-                        } else if (mensaje.contains("URGENTE")) {
-                            String[] partes = mensaje.split(";");
-                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
-                            vistaMedico.mostrarMensajeUrgente(mensajeUrgente);
-                        }else {
-                            String[] partes = mensaje.split(":", 2);
-                            
-                            if (partes.length == 2) {
-                                String pestaña = partes[0];
-                                String contenidoMensaje = partes[1];
-                                switch (pestaña) {
-                                    case "Medico-Medico":
-                                        vistaMedico.mostrarMensajeMedico(contenidoMensaje);
-                                        break;
-                                    case "Auxiliar":
-                                        vistaMedico.mostrarMensajeAuxiliar(contenidoMensaje);
-                                        break;
-                                    case "Medico-Admision":
-                                        vistaMedico.mostrarMensajeAdmision(contenidoMensaje);
-                                        break;
-                                    case "Medico-Pabellon":
-                                        vistaMedico.mostrarMensajePabellon(contenidoMensaje);
-                                        break;
-                                    case "Medico-Examenes":
-                                        vistaMedico.mostrarMensajeExamenes(contenidoMensaje);
-                                        break;
-                                }
-                            }
-                        }
+                    if (socket == null || socket.isClosed()) {
+                        throw new IOException("Socket cerrado.");
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    salida.writeUTF("PING"); // Envía un mensaje ligero para comprobar la conexión
+                    Thread.sleep(10000); // Monitorea cada 10 segundos
+                } catch (IOException | InterruptedException e) {
+                    System.err.println("Conexión perdida. Intentando reconectar...");
+                    conectarAlServidor();
                 }
             }
         }).start();
     }
-    private void actualizarListaConectados(String mensaje) {
-        String[] partes = mensaje.split(":")[1].split(",");
-        modeloListaMedicos.clear();
-        for (String medico : partes) {
-            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
-                modeloListaMedicos.addElement(medico);
+
+    private void escucharMensajes() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (entrada == null) {
+                        conectarAlServidor(); // Reconecta si `entrada` es null
+                    }
+                    String mensaje = entrada.readUTF();
+                    System.out.println("Mensaje recibido: " + mensaje);
+                    procesarMensaje(mensaje); // Lógica para manejar mensajes
+                } catch (IOException e) {
+                    System.err.println("Conexión perdida durante la escucha. Intentando reconectar...");
+                    conectarAlServidor();
+                }
+            }
+        }).start();
+    }
+
+    private void procesarMensaje(String mensaje) {
+        if (mensaje.startsWith("Conectados:")) {
+            actualizarListaConectados(mensaje);
+        } else if (mensaje.contains("PrivateMessage")) {
+            String remitente = mensaje.split(" ")[1].split("\\[")[0];
+            String contenido = convertirMensajePrivado(mensaje);
+            vistaMedico.mostrarMensajePrivado(remitente, contenido);
+        } else if (mensaje.contains("URGENTE")) {
+            String[] partes = mensaje.split(";");
+            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : " + partes[1];
+            vistaMedico.mostrarMensajeUrgente(mensajeUrgente);
+        } else {
+            String[] partes = mensaje.split(":", 2);
+            if (partes.length == 2) {
+                String pestaña = partes[0];
+                String contenidoMensaje = partes[1];
+                switch (pestaña) {
+                    case "Medico-Medico" -> vistaMedico.mostrarMensajeMedico(contenidoMensaje);
+                    case "Auxiliar" -> vistaMedico.mostrarMensajeAuxiliar(contenidoMensaje);
+                    case "Medico-Admision" -> vistaMedico.mostrarMensajeAdmision(contenidoMensaje);
+                    case "Medico-Pabellon" -> vistaMedico.mostrarMensajePabellon(contenidoMensaje);
+                    case "Medico-Examenes" -> vistaMedico.mostrarMensajeExamenes(contenidoMensaje);
+                }
             }
         }
     }
 
-
-    private String convertirMensajePrivado(String mensaje) {
-        int index = mensaje.indexOf('[');
-        if (index != -1) {
-            return mensaje.substring(index);
+    private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
+        String mensaje = campoMensaje.getText();
+        if (!mensaje.isEmpty()) {
+            String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
+            String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
+            try {
+                if (socket == null || socket.isClosed()) {
+                    System.out.println("Socket cerrado. Intentando reconectar...");
+                    conectarAlServidor();
+                }
+                salida.writeUTF(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado);
+                campoMensaje.setText("");
+            } catch (SocketException e) {
+                System.err.println("Error al enviar el mensaje: " + e.getMessage());
+                System.out.println("Intentando reconectar...");
+                conectarAlServidor();
+                enviarMensaje(pestaña, campoMensaje, areaChat); // Reintenta enviar el mensaje
+            } catch (IOException e) {
+                System.err.println("Error general al enviar el mensaje: " + e.getMessage());
+            }
+        } else {
+            System.out.println("El campo de mensaje está vacío, no se envía nada.");
         }
-        return mensaje;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case "EnviarMensajeMedico":
-                enviarMensajeMedico();
-                break;
-            case "EnviarMensajeAuxiliar":
-                enviarMensajeAuxiliar();
-                break;
-            case "EnviarMensajeAdmision":
-                enviarMensajeAdmision();
-                break;
-            case "EnviarMensajePabellon":
-                enviarMensajePabellon();
-                break;
-            case "EnviarMensajeExamenes":
-                enviarMensajeExamenes();
-                break;
-            default:
-                break;
+            case "EnviarMensajeMedico" -> enviarMensaje("Medico-Medico", vistaMedico.getCampoMensajeMedico(), vistaMedico.getAreaChatMedico());
+            case "EnviarMensajeAuxiliar" -> enviarMensaje("Auxiliar", vistaMedico.getCampoMensajeAuxiliar(), vistaMedico.getAreaChatAuxiliar());
+            case "EnviarMensajeAdmision" -> enviarMensaje("Medico-Admision", vistaMedico.getCampoMensajeAdmision(), vistaMedico.getAreaChatAdmision());
+            case "EnviarMensajePabellon" -> enviarMensaje("Medico-Pabellon", vistaMedico.getCampoMensajePabellon(), vistaMedico.getAreaChatPabellon());
+            case "EnviarMensajeExamenes" -> enviarMensaje("Medico-Examenes", vistaMedico.getCampoMensajeExamenes(), vistaMedico.getAreaChatExamenes());
         }
     }
 
@@ -167,43 +184,21 @@ public class ControladorMedico implements ActionListener, ListSelectionListener 
         }
     }
 
-
-    private void enviarMensajeMedico() {
-        enviarMensaje("Medico-Medico", vistaMedico.getCampoMensajeMedico(), vistaMedico.getAreaChatMedico());
-    }
-
-    private void enviarMensajeAuxiliar() {
-        enviarMensaje("Auxiliar", vistaMedico.getCampoMensajeAuxiliar(), vistaMedico.getAreaChatAuxiliar());
-    }
-
-    private void enviarMensajeAdmision() {
-        enviarMensaje("Medico-Admision", vistaMedico.getCampoMensajeAdmision(), vistaMedico.getAreaChatAdmision());
-    }
-
-    private void enviarMensajePabellon() {
-        enviarMensaje("Medico-Pabellon", vistaMedico.getCampoMensajePabellon(), vistaMedico.getAreaChatPabellon());
-    }
-
-    private void enviarMensajeExamenes() {
-        enviarMensaje("Medico-Examenes", vistaMedico.getCampoMensajeExamenes(), vistaMedico.getAreaChatExamenes());
-    }
-
-    private void enviarMensaje(String pestaña, JTextField campoMensaje, JTextArea areaChat) {
-        String mensaje = campoMensaje.getText();
-        if (!mensaje.isEmpty()) {
-            String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
-            String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
-            try {
-                System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
-                salida.writeUTF(pestaña + ":" + mensajeFormateado);
-                gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Call the guardarChat method on the instance
-                campoMensaje.setText("");
-            } catch (IOException e) {
-                System.err.println("Error al enviar el mensaje: " + e.getMessage());
-                e.printStackTrace();
+    private void actualizarListaConectados(String mensaje) {
+        String[] partes = mensaje.split(":")[1].split(",");
+        modeloListaMedicos.clear();
+        for (String medico : partes) {
+            if (!medico.isEmpty() && !medico.equals(nombreUsuario)) {
+                modeloListaMedicos.addElement(medico);
             }
-        } else {
-            System.out.println("El campo de mensaje está vacío, no se envía nada.");
         }
+    }
+
+    private String convertirMensajePrivado(String mensaje) {
+        int index = mensaje.indexOf('[');
+        if (index != -1) {
+            return mensaje.substring(index);
+        }
+        return mensaje;
     }
 }

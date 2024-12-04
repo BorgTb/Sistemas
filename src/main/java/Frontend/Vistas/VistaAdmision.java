@@ -240,14 +240,23 @@ public class VistaAdmision extends JFrame {
     }
 
     private void conectarAlServidor() {
-        try {
-            socket = new Socket("localhost", 12345);
-            salida = new DataOutputStream(socket.getOutputStream());
-            entrada = new DataInputStream(socket.getInputStream());
-            salida.writeUTF(nombreUsuario);
-            System.out.println("Conectado al servidor");
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (socket == null || socket.isClosed()) {
+            try {
+                System.out.println("Intentando conectar al servidor...");
+                socket = new Socket("34.176.62.179", 8080);
+                salida = new DataOutputStream(socket.getOutputStream());
+                entrada = new DataInputStream(socket.getInputStream());
+                salida.writeUTF(nombreUsuario);
+                System.out.println("Conectado al servidor");
+                break;
+            } catch (IOException e) {
+                System.err.println("Error al conectar: " + e.getMessage());
+                try {
+                    Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
 
