@@ -435,19 +435,21 @@ public class VistaExamenes extends JFrame {
                     while ((mensaje = entrada.readUTF()) != null) {
                         if (mensaje.startsWith("Conectados:")) {
                             actualizarListaConectados(mensaje);
-                        }else if (mensaje.contains("PrivateMessage")) {
-                            String emisor = mensaje.split(" ")[1].split("")[0];
-                            String remitente = mensaje.split(" ")[1].split("\\[")[0];
-                            String contenido = convertirMensajePrivado(mensaje);
-                            mostrarMensajePrivado(remitente, contenido);
+                        } else if (mensaje.contains("PrivateMessage")) {
+                            String[] partes = mensaje.split(" ", 2);
+                            if (partes.length == 2) {
+                                String remitente = partes[1].split("\\[")[0];
+                                String contenido = convertirMensajePrivado(mensaje);
+                                mostrarMensajePrivado(remitente, contenido);
+                            }
                         } else if (mensaje.contains("URGENTE")) {
-                            String[] partes = mensaje.split(";");
-                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : "+partes[1];
-                            mostrarMensajeUrgente(mensajeUrgente);
-                        }else {
-                            
+                            String[] partes = mensaje.split(";", 2);
+                            if (partes.length == 2) {
+                                String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : " + partes[1];
+                                mostrarMensajeUrgente(mensajeUrgente);
+                            }
+                        } else {
                             String[] partes = mensaje.split(":", 2);
-                            System.out.println("Partes: " + partes[0] + " " + partes[1]);
                             if (partes.length == 2) {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];

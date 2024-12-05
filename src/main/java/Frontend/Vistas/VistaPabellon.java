@@ -434,7 +434,6 @@ public class VistaPabellon extends JFrame {
         mostrarMensajeMedico(mensaje);
         mostrarMensajeAuxiliar(mensaje);
     }
-
     private void escucharMensajes() {
         new Thread(new Runnable() {
             @Override
@@ -442,18 +441,21 @@ public class VistaPabellon extends JFrame {
                 try {
                     String mensaje;
                     while ((mensaje = entrada.readUTF()) != null) {
-                        // System.out.println("Mensaje recibido: " + mensaje);
                         if (mensaje.startsWith("Conectados:")) {
                             actualizarListaConectados(mensaje);
                         } else if (mensaje.contains("PrivateMessage")) {
-                            String emisor = mensaje.split(" ")[1].split("")[0];
-                            String remitente = mensaje.split(" ")[1].split("\\[")[0];
-                            String contenido = convertirMensajePrivado(mensaje);
-                            mostrarMensajePrivado(remitente, contenido);
+                            String[] partes = mensaje.split(" ", 2);
+                            if (partes.length == 2) {
+                                String remitente = partes[1].split("\\[")[0];
+                                String contenido = convertirMensajePrivado(mensaje);
+                                mostrarMensajePrivado(remitente, contenido);
+                            }
                         } else if (mensaje.contains("URGENTE")) {
-                            String[] partes = mensaje.split(";");
-                            String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : " + partes[1];
-                            mostrarMensajeUrgente(mensajeUrgente);
+                            String[] partes = mensaje.split(";", 2);
+                            if (partes.length == 2) {
+                                String mensajeUrgente = "Mensaje URGENTE DE ADMINISTRACION : " + partes[1];
+                                mostrarMensajeUrgente(mensajeUrgente);
+                            }
                         } else {
                             String[] partes = mensaje.split(":", 2);
                             if (partes.length == 2) {
@@ -475,6 +477,7 @@ public class VistaPabellon extends JFrame {
             }
         }).start();
     }
+
 
     private void enviarMensajeAuxiliar() {
         enviarMensaje("Auxiliar", campoMensajeAuxiliar, areaChatAuxiliar);
