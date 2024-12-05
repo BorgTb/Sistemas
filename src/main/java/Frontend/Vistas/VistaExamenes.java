@@ -10,10 +10,13 @@ import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,6 +61,7 @@ public class VistaExamenes extends JFrame {
     private Map<String, JPanel> chatsAbiertos;
 
     
+    private List<String> mensajeCache = new ArrayList<>();
     private gestorArchivos gestorArchivos = new gestorArchivos();
 
     @SuppressWarnings("unchecked")
@@ -159,7 +163,7 @@ public class VistaExamenes extends JFrame {
         add(tabbedPane, BorderLayout.CENTER);
         add(panelListaMedicos, BorderLayout.EAST);
          conectarAlServidor();
-         escucharMensajes();
+         monitorearConexion();
         listaMedicos.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedMedico = (String) listaMedicos.getSelectedValue();
@@ -173,12 +177,7 @@ public class VistaExamenes extends JFrame {
                 }
             }
         });
-         gestorArchivos.leerChats("examenes-examenes").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
-         gestorArchivos.leerChats("medico-examenes").forEach(mensaje -> areaChatMedico.append(mensaje + "\n"));
-         gestorArchivos.leerChats("examenes-pabellon").forEach(mensaje -> areaChatPabellon.append(mensaje + "\n"));
-         gestorArchivos.leerChats("examenes-admision").forEach(mensaje -> areaChatExamenes.append(mensaje + "\n"));
-         gestorArchivos.leerChats("auxiliar").forEach(mensaje -> areaChatAuxiliar.append(mensaje + "\n"));
-
+        cargarMensajesDesdeArchivos();
         botonEnviarMensajeAuxiliar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -238,24 +237,72 @@ public class VistaExamenes extends JFrame {
     }
 
     private void conectarAlServidor() {
-        while (socket == null || socket.isClosed()) {
+        while (true) {
             try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close(); // Cierra el socket antiguo si existe
+                }
                 System.out.println("Intentando conectar al servidor...");
                 socket = new Socket("34.176.62.179", 8080);
                 salida = new DataOutputStream(socket.getOutputStream());
                 entrada = new DataInputStream(socket.getInputStream());
                 salida.writeUTF(nombreUsuario);
-                System.out.println("Conectado al servidor");
-                break;
+                System.out.println("Conexión restablecida con el servidor.");
+                limpiarPantallaYRecargarMensajes();
+                break; // Sale del bucle tras conectar correctamente
             } catch (IOException e) {
-                System.err.println("Error al conectar: " + e.getMessage());
+                System.err.println("Servidor no disponible. Intentando reconectar en 5 segundos...");
                 try {
                     Thread.sleep(5000); // Espera 5 segundos antes de intentar de nuevo
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
+                    System.err.println("Reconexión interrumpida.");
+                    break;
                 }
             }
+    
         }
+        escucharMensajes();
+    }
+    private void limpiarPantallaYRecargarMensajes() {
+        areaChatMedico.setText("");
+        areaChatAuxiliar.setText("");
+        areaChatAdmision.setText("");
+        areaChatPabellon.setText("");
+        areaChatExamenes.setText("");
+        cargarMensajesDesdeArchivos();
+    }
+    
+    private void cargarMensajesDesdeArchivos() {
+        cargarMensajesDesdeArchivo("medico-examenes", areaChatMedico);
+        cargarMensajesDesdeArchivo("auxiliar", areaChatAuxiliar);
+        cargarMensajesDesdeArchivo("examenes-admision", areaChatAdmision);
+        cargarMensajesDesdeArchivo("examenes-pabellon", areaChatPabellon);
+        cargarMensajesDesdeArchivo("examenes-examenes", areaChatExamenes);
+
+    }
+    
+    private void cargarMensajesDesdeArchivo(String pestaña, JTextArea areaChat) {
+        List<String> mensajes = gestorArchivos.leerChats(pestaña);
+        for (String mensaje : mensajes) {
+            areaChat.append(mensaje + "\n");
+        }
+    }
+    private void monitorearConexion() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (socket == null || socket.isClosed()) {
+                        throw new IOException("Socket cerrado.");
+                    }
+                    salida.writeUTF("PING"); // Envía un mensaje ligero para comprobar la conexión
+                    Thread.sleep(10000); // Monitorea cada 10 segundos
+                } catch (IOException | InterruptedException e) {
+                    System.err.println("Conexión perdida. Intentando reconectar...");
+                    conectarAlServidor();
+                }
+            }
+        }).start();
     }
     private void actualizarListaConectados(String mensaje) {
         Set<String> rutsMedicos = obtenerRutsMedicos();
@@ -405,21 +452,11 @@ public class VistaExamenes extends JFrame {
                                 String pestaña = partes[0];
                                 String contenidoMensaje = partes[1];
                                 switch (pestaña) {
-                                    case "Medico-Examenes":
-                                        mostrarMensajeMedico(contenidoMensaje);
-                                        break;
-                                    case "Auxiliar":
-                                        mostrarMensajeAuxiliar(contenidoMensaje);
-                                        break;
-                                    case "Examenes-Admision":
-                                        mostrarMensajeAdmision(contenidoMensaje);
-                                        break;
-                                    case "Examenes-Pabellon":
-                                        mostrarMensajePabellon(contenidoMensaje);
-                                        break;
-                                    case "Examenes-Examenes":
-                                        mostrarMensajeExamenes(contenidoMensaje);
-                                        break;
+                                    case "Medico-Examenes" -> mostrarMensajeMedico(contenidoMensaje);
+                                    case "Auxiliar" -> mostrarMensajeAuxiliar(contenidoMensaje);
+                                    case "Examenes-Admision" -> mostrarMensajeAdmision(contenidoMensaje);
+                                    case "Examenes-Pabellon" -> mostrarMensajePabellon(contenidoMensaje);
+                                    case "Examenes-Examenes" -> mostrarMensajeExamenes(contenidoMensaje);
                                 }
                             }
                         }
@@ -453,13 +490,25 @@ public class VistaExamenes extends JFrame {
             String horaActual = new SimpleDateFormat("HH:mm:ss").format(new Date());
             String mensajeFormateado = "[" + horaActual + "] " + nombreUsuario + " (" + rolUsuario + "): " + mensaje;
             try {
-                System.out.println("Enviando mensaje: " + pestaña + ":" + mensajeFormateado);
+                if (socket == null || socket.isClosed()) {
+                    areaChat.append("Conexión caída. Reconectando...\n");
+                    System.out.println("Socket cerrado. Guardando mensaje en caché...");
+                    mensajeCache.add(pestaña + ":" + mensajeFormateado);
+                    gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Guardar en el archivo
+                    campoMensaje.setText("");
+                    return;
+                }
                 salida.writeUTF(pestaña + ":" + mensajeFormateado);
                 gestorArchivos.guardarChat(pestaña, mensajeFormateado);
                 campoMensaje.setText("");
-            } catch (IOException e) {
+            } catch (SocketException e) {
                 System.err.println("Error al enviar el mensaje: " + e.getMessage());
-                e.printStackTrace();
+                System.out.println("Guardando mensaje en caché...");
+                mensajeCache.add(pestaña + ":" + mensajeFormateado);
+                gestorArchivos.guardarChat(pestaña, mensajeFormateado); // Guardar en el archivo
+                conectarAlServidor();
+            } catch (IOException e) {
+                System.err.println("Error general al enviar el mensaje: " + e.getMessage());
             }
         } else {
             System.out.println("El campo de mensaje está vacío, no se envía nada.");

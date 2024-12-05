@@ -1,2 +1,12 @@
 
 [MENSAJE URGENTE]: TODOS A URGENCIAS
+[16:39:45] exa (Examenes): hola
+[16:39:57] adm (Admision): que pasa
+[16:40:49] adm (Admision): 123
+[16:40:55] exa (Examenes): dou
+[16:41:17] exa (Examenes): 123
+[16:41:20] adm (Admision): 789
+[16:41:28] adm (Admision): zxc
+[16:41:34] exa (Examenes): qwe
+[16:41:49] exa (Examenes): ee
+[16:41:52] adm (Admision): zxcqq
