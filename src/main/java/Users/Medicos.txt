@@ -14,3 +14,4 @@ Nombre: user13, RUT: 2017407009, Correo: User13@mail.com, Clave: user123, TipoUs
 Nombre: user14, RUT: 2021407005, Correo: User14@mail.com, Clave: user123, TipoUsuario: Medico, Area: null, PrimerInicio: true
 Nombre: user15, RUT: 2020407031, Correo: User15@mail.com, Clave: user123, TipoUsuario: Medico, Area: null, PrimerInicio: true
 Nombre: user16, RUT: 2019407023, Correo: User16@mail.com, Clave: user123, TipoUsuario: Medico, Area: null, PrimerInicio: true
+Nombre: user32, RUT: 2021407014, Correo: User17@mail.com, Clave: 123, TipoUsuario: Medico, Area: null, PrimerInicio: false

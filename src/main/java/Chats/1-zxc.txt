@@ -1,5 +1,0 @@
-[04:45:56] zxc (Pabellon): hola MEDICO 1
-[04:46:04] 1 (Médico): HOLA ZXC
-[04:46:20] zxc (Pabellon): ve este mensaje cuando te conectes
-
-[MENSAJE URGENTE]: TODOS A URGENCIAS
