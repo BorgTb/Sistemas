@@ -1,6 +1,15 @@
-Nombre: Alberto Fernandez, RUT: adm, Correo: alberto.fernandez@gmail.com, Clave: 5678, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: false
-Nombre: Beatriz Gonzalez, RUT: pab, Correo: beatriz.gonzalez@hotmail.com, Clave: pab, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: false
-Nombre: Camila Ramirez, RUT: exa, Correo: camila.ramirez@gmail.com, Clave: exa, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: false
-Nombre: Daniel Torres, RUT: aux, Correo: daniel.torres@hotmail.com, Clave: aux, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: false
-Nombre: Elena Martinez, RUT: adm1, Correo: elena.martinez@gmail.com, Clave: 9012, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: false
-Nombre: Francisco Lopez, RUT: 56789012-4, Correo: francisco.lopez@gmail.com, Clave: 0123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: user17, RUT: 2021407044, Correo: User17@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: false
+Nombre: user18, RUT: 2018407005, Correo: User18@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: user19, RUT: 2016407032, Correo: User19@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: true
+Nombre: user20, RUT: 2021407018, Correo: User20@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: true
+Nombre: user21, RUT: 2021407043, Correo: User21@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: true
+Nombre: user22, RUT: 2021407039, Correo: User22@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: user23, RUT: 2017407049, Correo: User23@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: true
+Nombre: user24, RUT: 2017407048, Correo: User24@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: true
+Nombre: user25, RUT: 2021407016, Correo: User25@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: true
+Nombre: user26, RUT: 2017407017, Correo: User26@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: user27, RUT: 2017407025, Correo: User27@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: true
+Nombre: user28, RUT: 2019407004, Correo: User28@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Auxiliar, PrimerInicio: true
+Nombre: user29, RUT: 2020407046, Correo: User29@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Admision, PrimerInicio: true
+Nombre: user30, RUT: 2019407021, Correo: User30@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Pabellon, PrimerInicio: true
+Nombre: user31, RUT: 2020407025, Correo: User31@mail.com, Clave: user123, TipoUsuario: Administrativo, Area: Examenes, PrimerInicio: false
